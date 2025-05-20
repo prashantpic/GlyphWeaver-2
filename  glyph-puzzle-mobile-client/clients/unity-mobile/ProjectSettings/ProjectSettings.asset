@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!129 &1
+PlayerSettings:
+  productName: Glyph Puzzle Mobile
+  companyName: DefaultCompany
+  bundleVersion: 0.1.0
+  # Default icon and other settings would be here
+  # PlayerSettings for Android
+  AndroidTargetDevices: 0
+  androidTargetArchitectures: 7 # ARM64 + ARMv7
+  # PlayerSettings for iOS
+  iOSRequireARKit: 0
+  # Other platform settings
+  cloudProjectId: 
+  organizationId: 
+  accelerometerFrequency: 60
+  defaultScreenOrientation: 4 # AutoRotate
+  allowedAutorotateToPortrait: 1
+  allowedAutorotateToPortraitUpsideDown: 1
+  allowedAutorotateToLandscapeLeft: 1
+  allowedAutorotateToLandscapeRight: 1
+  useAnimatedAutorotation: 0
+  # Many more settings follow
+--- !u!1 &1001
+EditorSettings:
+  m_დომObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  # Editor settings follow
+--- !u!1 &1002
+BuildPlayerValidator:
+  m_ObjectHideFlags: 0
+  m_BuildPlayerPreventionValidationMethods: []
+  # More settings
