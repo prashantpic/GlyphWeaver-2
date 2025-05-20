@@ -1,0 +1,241 @@
+openapi: 3.0.0
+info:
+  title: Glyph Puzzle API Gateway
+  version: 1.0.0
+  description: Unified API Gateway for Glyph Puzzle backend services.
+
+servers:
+  - url: ${process.env.API_GATEWAY_BASE_URL:-http://localhost:3000}/v1
+    description: API Gateway
+
+paths:
+  /leaderboards:
+    get:
+      summary: Get global leaderboard
+      operationId: getGlobalLeaderboard
+      tags:
+        - Leaderboards
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: A list of leaderboard entries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /player/profile:
+    get:
+      summary: Get current player's profile
+      operationId: getPlayerProfile
+      tags:
+        - Player
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Player profile data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerProfileResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /game/submit-score:
+    post:
+      summary: Submit score for a completed game level
+      operationId: submitGameScore
+      tags:
+        - Game
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Score submission payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoreSubmissionRequest'
+      responses:
+        '200':
+          description: Score submitted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoreSubmissionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    ErrorResponseDto:
+      type: object
+      required:
+        - statusCode
+        - message
+        - timestamp
+        - path
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code.
+          example: 400
+        message:
+          type: string
+          description: Human-readable error message.
+          example: "Invalid input provided."
+        errorCode:
+          type: string
+          nullable: true
+          description: Application-specific error code.
+          example: "VALIDATION_ERROR"
+        timestamp:
+          type: string
+          format: date-time
+          description: ISO 8601 timestamp of when the error occurred.
+          example: "2024-07-16T12:00:00Z"
+        path:
+          type: string
+          description: The request path that resulted in the error.
+          example: "/v1/game/submit-score"
+        details:
+          oneOf:
+            - type: object
+              additionalProperties: true
+            - type: array
+              items:
+                type: object
+                additionalProperties: true
+          nullable: true
+          description: Optional detailed error information (e.g., validation errors).
+          example: [{ "field": "score", "message": "Score must be a positive integer." }]
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+          example: 1
+        playerId:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        playerName:
+          type: string
+          example: "GlyphMaster"
+        score:
+          type: integer
+          example: 10000
+
+    PlayerProfileResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        username:
+          type: string
+          example: "GlyphMaster"
+        email:
+          type: string
+          format: email
+          example: "glyphmaster@example.com"
+        totalScore:
+          type: integer
+          example: 125000
+        # Add other relevant player profile fields
+
+    ScoreSubmissionRequest:
+      type: object
+      required:
+        - levelId
+        - score
+        - checksum
+      properties:
+        levelId:
+          type: string
+          description: Identifier of the level played.
+          example: "level_001"
+        score:
+          type: integer
+          description: Score achieved by the player for the level.
+          example: 5000
+        checksum:
+          type: string
+          description: A checksum to validate the integrity of the game data and score.
+          example: "abc123def456"
+
+    ScoreSubmissionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Score submitted successfully."
+        newTotalScore:
+          type: integer
+          example: 130000
+
+  responses:
+    UnauthorizedError:
+      description: Authentication information is missing or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDto'
+    ForbiddenError:
+      description: Authenticated user does not have permission to access the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDto'
+    BadRequestError:
+      description: The request was malformed or contained invalid data.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDto'
+    NotFoundError:
+      description: The requested resource could not be found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDto'
+    InternalServerError:
+      description: An unexpected error occurred on the server.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponseDto'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+
+security:
+  - BearerAuth: []
