@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Targeting a modern Node.js version (Node.js 20 supports ES2022+)
+    "module": "commonjs", // Standard for Node.js libraries
+    "lib": ["ES2020", "DOM"], // Include DOM for potential client-side type usage if ever needed, though primarily backend
+    "declaration": true, // Generate .d.ts files
+    "declarationMap": true, // Generate sourcemaps for .d.ts files
+    "sourceMap": true, // Generate .js.map sourcemap files
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of source files
+    "composite": false, // Not a composite project by default
+    "strict": true, // Enable all strict type-checking options
+    "noImplicitAny": true, // Raise error on expressions and declarations with an implied 'any' type
+    "strictNullChecks": true, // Enable strict null checks
+    "strictFunctionTypes": true, // Enable strict checking of function types
+    "strictBindCallApply": true, // Enable strict 'bind', 'call', and 'apply' methods on functions
+    "strictPropertyInitialization": true, // Ensure non-undefined class properties are initialized in the constructor
+    "noImplicitThis": true, // Raise error on 'this' expressions with an implied 'any' type
+    "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each source file
+    "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules
+    "experimentalDecorators": true, // Enables experimental support for ES7 decorators (if needed in future)
+    "emitDecoratorMetadata": true, // Enables experimental support for emitting type metadata for decorators (if needed)
+    "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts)
+    "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file
+    "resolveJsonModule": true, // Include modules imported with .json extension
+    "moduleResolution": "node" // Specify module resolution strategy: 'node' (Node.js) or 'classic'
+  },
+  "include": [
+    "src/**/*" // Glob pattern to include all .ts files in the src directory
+  ],
+  "exclude": [
+    "node_modules", // Exclude the node_modules directory
+    "dist", // Exclude the output directory
+    "src/**/*.test.ts", // Exclude test files from the main build
+    "src/**/*.spec.ts" // Exclude spec files (another common naming for tests)
+  ]
+}
