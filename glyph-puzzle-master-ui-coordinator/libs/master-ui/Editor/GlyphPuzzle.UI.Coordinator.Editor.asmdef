@@ -1,0 +1,18 @@
+{
+    "name": "GlyphPuzzle.UI.Coordinator.Editor",
+    "rootNamespace": "GlyphPuzzle.UI.Coordinator.Editor",
+    "references": [
+        "GlyphPuzzle.UI.Coordinator"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
