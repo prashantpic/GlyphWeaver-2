@@ -1,0 +1,13 @@
+// Unity Prefab File: clients/unity-mobile/Assets/_Prefabs/UI/MainMenuCanvas.prefab
+// Template: Unity Prefab
+// Description: Prefab for the Main Menu UI elements, including buttons for New Game, Continue, etc. Implements REQ-UIUX-001.
+// Domain: MobileClient.Presentation.UI
+// RequirementIds: ["REQ-UIUX-001"]
+// RepositoryId: REPO-MOBILE-CLIENT
+// Dependency Level: 4
+//
+// No C# code is generated directly for .prefab files in this text format.
+// This prefab would define the structure and appearance of the Main Menu's UI.
+// It would contain a Canvas, Buttons (New Game, Continue, Settings, etc.), Text elements, and Images.
+// The MainMenuController C# script would typically be attached to the root GameObject of this prefab
+// or a dedicated controller GameObject in the MainMenu scene that might instantiate this prefab.

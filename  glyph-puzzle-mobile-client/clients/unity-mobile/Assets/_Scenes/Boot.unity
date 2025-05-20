@@ -1,0 +1,10 @@
+// Unity Scene File: clients/unity-mobile/Assets/_Scenes/Boot.unity
+// Template: Unity Scene
+// Description: Initial scene that loads first, responsible for initializing core services and transitioning to the Main Menu.
+// Domain: MobileClient.Presentation.Core
+// RepositoryId: REPO-MOBILE-CLIENT
+// Dependency Level: 4
+//
+// No C# code is generated directly for .unity files in this text format.
+// GameObjects within this scene would have C# script components (e.g., an initialization manager) attached in the Unity Editor.
+// These components would handle initializing core services and transitioning to the MainMenu scene.

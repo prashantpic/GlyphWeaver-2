@@ -1,0 +1,13 @@
+// Unity Prefab File: clients/unity-mobile/Assets/_Prefabs/UI/LevelButton.prefab
+// Template: Unity Prefab
+// Description: Prefab for a button representing a single level in the Level Selection screen, showing status and stars.
+// Domain: MobileClient.Presentation.UI
+// RequirementIds: ["REQ-CGLE-001"]
+// RepositoryId: REPO-MOBILE-CLIENT
+// Dependency Level: 4
+//
+// No C# code is generated directly for .prefab files in this text format.
+// This prefab represents a single clickable level entry. It would include UI elements like
+// a Button, TextMeshProUGUI for the level name/number, Image for a lock icon, and a
+// custom StarRatingView component (another prefab or scripted UI) for displaying stars.
+// The LevelButtonView C# script would be attached to the root of this prefab in the Unity Editor.
