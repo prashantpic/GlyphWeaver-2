@@ -1,0 +1,4 @@
+This is a placeholder for the StripePattern.png image asset.
+It should be a 64x64 PNG file representing a stripe pattern.
+This texture is referenced by PatternDefinitionSO and applied by a PatternApplicator
+to aid differentiation in colorblind modes (REQ-ACC-002).
