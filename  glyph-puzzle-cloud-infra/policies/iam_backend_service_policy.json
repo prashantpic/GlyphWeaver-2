@@ -1,0 +1,60 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::${example-app-data-bucket}/*",
+                "arn:aws:s3:::${example-app-user-uploads-bucket}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sqs:SendMessage",
+                "sqs:ReceiveMessage",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+            ],
+            "Resource": "arn:aws:sqs:${aws_region}:${aws_account_id}:${example-app-queue-name}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:${aws_region}:${aws_account_id}:log-group:/ecs/${project_name}/${app_name}-${environment}:*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "elasticache:DescribeReplicationGroups",
+                "elasticache:DescribeCacheClusters"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue"
+            ],
+            "Resource": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:${project_name}/${environment}/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "kms:Decrypt",
+            "Resource": "arn:aws:kms:${aws_region}:${aws_account_id}:key/${kms_key_id_for_secrets}",
+            "Condition": {
+                "StringEquals": {
+                    "kms:ViaService": "secretsmanager.${aws_region}.amazonaws.com"
+                }
+            }
+        }
+    ]
+}
