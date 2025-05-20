@@ -2,7 +2,7 @@ namespace GlyphPuzzle.Mobile.Core
 {
     /// <summary>
     /// Global constants for the game.
-    /// Centralizes constant values used throughout the application,
+    /// Contains static readonly or const fields for various game-wide constant values,
     /// improving maintainability and reducing magic strings/numbers.
     /// </summary>
     public static class GameConstants
@@ -15,6 +15,6 @@ namespace GlyphPuzzle.Mobile.Core
         public const string PlayerPrefsMusicVolumeKey = "MusicVolume";
         public const string PlayerPrefsSfxVolumeKey = "SfxVolume";
         public const string PlayerPrefsAccessibilitySettingsKey = "AccessibilitySettings";
-        public const string PlayerDataKey = "PlayerData"; // For SaveLoadManager
+        // Add other PlayerPrefs keys, tags, layer names, etc. as needed.
     }
 }

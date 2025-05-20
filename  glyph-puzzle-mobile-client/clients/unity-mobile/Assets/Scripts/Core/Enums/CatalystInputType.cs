@@ -2,7 +2,7 @@ namespace GlyphPuzzle.Mobile.Core.Enums
 {
     /// <summary>
     /// Enumerates the different input methods for Catalyst glyph activation.
-    /// Used for accessibility options as per REQ-ACC-001.
+    /// Used by REQ-ACC-001.
     /// </summary>
     public enum CatalystInputType
     {
