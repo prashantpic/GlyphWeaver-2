@@ -1,0 +1,11 @@
+<engine:VisualElement
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    class="localized-text-element">
+
+    <!-- Using engine:Label which is a TextElement. If TextMeshPro is specifically needed and
+         a distinct TextMeshPro.TextElement is available/configured for UXML, it could be used here. -->
+    <engine:Label name="localized-label" class="localized-text-element__label" text="Localized Text"/>
+
+</engine:VisualElement>

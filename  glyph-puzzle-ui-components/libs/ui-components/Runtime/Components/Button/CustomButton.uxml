@@ -1,0 +1,9 @@
+<engine:VisualElement
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:engine="UnityEngine.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd"
+    class="custom-button">
+
+    <engine:Label name="button-text" class="custom-button__text" text="Button"/>
+
+</engine:VisualElement>

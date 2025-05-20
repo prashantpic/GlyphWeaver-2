@@ -1,0 +1,53 @@
+.custom-button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    background-color: var(--button-background-color, #4A4A4A); /* Default or theme variable */
+    border-width: 1px;
+    border-color: var(--button-border-color, #2D2D2D);
+    border-radius: 4px;
+    min-height: 30px; /* Ensure clickable area */
+    min-width: 80px;
+    transition-property: background-color, border-color, opacity;
+    transition-duration: 0.15s;
+    transition-timing-function: ease-in-out;
+}
+
+.custom-button:hover {
+    background-color: var(--button-background-color-hover, #5A5A5A);
+    border-color: var(--button-border-color-hover, #3D3D3D);
+}
+
+.custom-button:active {
+    background-color: var(--button-background-color-active, #3A3A3A);
+    border-color: var(--button-border-color-active, #1D1D1D);
+}
+
+.custom-button:disabled,
+.custom-button.disabled { /* Handle both states */
+    opacity: 0.5;
+    /* Optional: specific background for disabled state */
+    /* background-color: var(--button-background-color-disabled, #303030); */
+    /* border-color: var(--button-border-color-disabled, #202020); */
+}
+
+.custom-button__text {
+    color: var(--button-text-color, #E0E0E0);
+    -unity-font-style: bold;
+    font-size: 14px;
+    -unity-text-align: middle-center;
+    white-space: nowrap; /* Prevent text wrapping by default */
+}
+
+.custom-button:disabled .custom-button__text,
+.custom-button.disabled .custom-button__text {
+    /* Optional: specific text color for disabled state */
+    /* color: var(--button-text-color-disabled, #707070); */
+}
+
+/* Utility class mentioned in SDS */
+.hidden {
+    display: none;
+}

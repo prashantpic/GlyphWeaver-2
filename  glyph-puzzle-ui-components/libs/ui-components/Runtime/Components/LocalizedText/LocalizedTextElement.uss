@@ -1,0 +1,13 @@
+.localized-text-element {
+    /* Container styles if any, default is usually fine */
+}
+
+.localized-text-element__label {
+    /* Default text styles */
+    color: var(--text-color, #E0E0E0); /* Example theme variable */
+    font-size: 14px;
+    /* Other properties like -unity-font, -unity-font-style, -unity-text-align can be set here */
+    /* For layout adaptation, ensure properties like 'white-space' are appropriate.
+       'LayoutAdapter' might adjust max-width or other properties if needed. */
+    white-space: normal; /* Allow wrapping for longer localized strings */
+}
