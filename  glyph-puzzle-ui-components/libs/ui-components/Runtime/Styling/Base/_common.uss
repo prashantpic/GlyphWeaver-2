@@ -1,0 +1,127 @@
+/*
+  _common.uss
+  Common base USS styles and utility classes for the UI library.
+  Provides foundational styles shared across the UI library, such as reset styles,
+  basic layout helpers, or common visual patterns.
+*/
+
+/* Utility Classes */
+.hidden {
+    display: none !important; /* Use !important cautiously, but often needed for utility classes */
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.disabled {
+    opacity: var(--opacity-disabled, 0.5); /* Use theme variable with fallback */
+    /* Consider 'pointer-events: none;' if interactivity should also be disabled */
+}
+
+/* Flexbox Utilities */
+.flex-container {
+    display: flex;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-center {
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-align-center {
+    align-items: center;
+}
+
+.flex-justify-center {
+    justify-content: center;
+}
+
+.flex-justify-between {
+    justify-content: space-between;
+}
+
+.flex-justify-around {
+    justify-content: space-around;
+}
+
+.flex-justify-end {
+    justify-content: flex-end;
+}
+
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.flex-shrink-0 {
+    flex-shrink: 0;
+}
+
+/* Text Alignment Utilities */
+.text-left {
+    -unity-text-align: upper-left; /* For UI Toolkit, use specific enum values */
+}
+
+.text-center {
+    -unity-text-align: middle-center;
+}
+
+.text-right {
+    -unity-text-align: upper-right;
+}
+
+/* Spacing Utilities (Example: use margins. Padding utilities would be similar) */
+.m-0 { margin: 0; }
+.mt-1 { margin-top: var(--spacing-s, 8px); }
+.mb-1 { margin-bottom: var(--spacing-s, 8px); }
+.ml-1 { margin-left: var(--spacing-s, 8px); }
+.mr-1 { margin-right: var(--spacing-s, 8px); }
+.mx-1 { margin-left: var(--spacing-s, 8px); margin-right: var(--spacing-s, 8px); }
+.my-1 { margin-top: var(--spacing-s, 8px); margin-bottom: var(--spacing-s, 8px); }
+
+.p-0 { padding: 0; }
+.pt-1 { padding-top: var(--spacing-s, 8px); }
+.pb-1 { padding-bottom: var(--spacing-s, 8px); }
+.pl-1 { padding-left: var(--spacing-s, 8px); }
+.pr-1 { padding-right: var(--spacing-s, 8px); }
+.px-1 { padding-left: var(--spacing-s, 8px); padding-right: var(--spacing-s, 8px); }
+.py-1 { padding-top: var(--spacing-s, 8px); padding-bottom: var(--spacing-s, 8px); }
+
+/* Fullscreen utility */
+.fullscreen {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Basic Element Styling (optional, if you want to override Unity defaults globally) */
+/*
+Label {
+    font-size: var(--font-size-medium, 16px);
+    color: var(--text-color-primary, #E0E0E0);
+    -unity-font: var(--font-family-main);
+}
+*/
+
+/* Example of a common visual pattern that could be a class */
+/*
+.card {
+    background-color: var(--surface-color, #2A2A2A);
+    border-radius: var(--border-radius-medium, 4px);
+    padding: var(--spacing-m, 16px);
+    border-width: var(--border-width, 1px);
+    border-color: var(--border-color, #555555);
+}
+*/

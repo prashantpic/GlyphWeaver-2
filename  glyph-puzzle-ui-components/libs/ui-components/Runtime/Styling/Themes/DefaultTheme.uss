@@ -1,0 +1,82 @@
+/*
+  DefaultTheme.uss
+  USS file containing variable definitions for the default theme.
+  Defines the default visual theme for all UI components by setting values for USS custom properties (theme variables).
+  These variables are then used by component-specific USS files.
+*/
+
+:root {
+    /* Primary Colors */
+    --primary-color: #4A90E2; /* A nice blue */
+    --primary-color-light: #7CACF0;
+    --primary-color-dark: #2D6AB1;
+    --on-primary-color: white;
+
+    /* Secondary Colors */
+    --secondary-color: #F5A623; /* A warm orange */
+    --secondary-color-light: #F8C46E;
+    --secondary-color-dark: #C68417;
+    --on-secondary-color: white;
+
+    /* Background Colors */
+    --background-color: #1E1E1E; /* Dark background */
+    --surface-color: #2A2A2A; /* Slightly lighter surface for cards, dialogs */
+    --dialog-overlay-color: rgba(0, 0, 0, 0.6);
+
+    /* Text Colors */
+    --text-color-primary: #E0E0E0; /* Light gray for primary text on dark backgrounds */
+    --text-color-secondary: #A0A0A0; /* Medium gray for secondary text */
+    --text-color-disabled: #757575; /* Darker gray for disabled text */
+    --text-color-error: #FF5252; /* Red for error messages */
+    --text-color-success: #4CAF50; /* Green for success messages */
+
+    /* Font Definitions (Ensure fonts are loaded in Unity) */
+    /* --font-family-main: resource("Fonts/MyCustomFont-Regular"); */
+    /* --font-family-bold: resource("Fonts/MyCustomFont-Bold"); */
+    --font-size-small: 12px;
+    --font-size-medium: 16px;
+    --font-size-large: 20px;
+    --font-size-xlarge: 24px;
+
+    /* Button Styles */
+    --button-background-color: var(--primary-color);
+    --button-text-color: var(--on-primary-color);
+    --button-background-color-hover: var(--primary-color-light);
+    --button-background-color-active: var(--primary-color-dark);
+    --button-background-color-disabled: #555555;
+    --button-text-color-disabled: var(--text-color-disabled);
+    --button-border-radius: 4px;
+    --button-padding: 8px 16px;
+
+    /* Input Field Styles */
+    --input-background-color: #3C3C3C;
+    --input-text-color: var(--text-color-primary);
+    --input-border-color: #555555;
+    --input-border-color-focus: var(--primary-color);
+    --input-border-radius: 4px;
+    --input-padding: 8px;
+
+    /* Spacing & Sizing */
+    --spacing-unit: 8px;
+    --spacing-xs: 4px; /* 0.5 * spacing-unit */
+    --spacing-s: 8px;  /* 1.0 * spacing-unit */
+    --spacing-m: 16px; /* 2.0 * spacing-unit */
+    --spacing-l: 24px; /* 3.0 * spacing-unit */
+    --spacing-xl: 32px;/* 4.0 * spacing-unit */
+
+    /* Borders */
+    --border-radius-small: 2px;
+    --border-radius-medium: 4px;
+    --border-radius-large: 8px;
+    --border-width: 1px;
+    --border-color: #555555;
+
+    /* Opacity */
+    --opacity-disabled: 0.5;
+
+    /* Transitions */
+    --transition-duration-short: 0.1s;
+    --transition-duration-medium: 0.2s;
+    --transition-duration-long: 0.3s;
+    --transition-timing-function: ease-in-out;
+}
