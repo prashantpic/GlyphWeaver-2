@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:engine="UnityEngine.UIElements">
+    <engine:VisualElement name="glyph-element-container" style="flex-grow: 1; align-items: center; justify-content: center;">
+        <!-- Image for pattern/color. Or this element itself can have background color/image. -->
+        <engine:Image name="glyph-image" style="width: 50px; height: 50px; --unity-background-image-tint-color: white;"/>
+        <!-- Label for the symbol/identifier, potentially overlaid or separate -->
+        <engine:Label name="glyph-symbol-label" text="S" style="position: absolute; font-size: 20px; -unity-font-style: bold; color: black;"/>
+    </engine:VisualElement>
+</ui:UXML>

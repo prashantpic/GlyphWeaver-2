@@ -1,0 +1,13 @@
+/* Styles for the PathSegmentElement */
+.PathSegmentElement {
+    /* Default dimensions, can be set by layout or specific instances */
+    width: 100px; 
+    height: 10px;
+    margin: 1px; /* Example margin */
+
+    /* Default appearance, overridden by ViewModel */
+    background-color: slategray; 
+
+    /* For patterns, ensure they tile or scale as desired */
+    /* -unity-background-scale-mode: scale-and-crop; (or tile, stretch-to-fill) */
+}
