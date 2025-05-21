@@ -1,4 +1,0 @@
-This is a placeholder for the DotPattern.png image asset.
-It should be a 64x64 PNG file representing a dot pattern.
-This texture is referenced by PatternDefinitionSO and applied by a PatternApplicator
-to aid differentiation in colorblind modes (REQ-ACC-002).
