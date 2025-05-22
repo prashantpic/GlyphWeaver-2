@@ -1,66 +1,83 @@
 using UnityEngine;
-using System; // Required for Exception
+using System;
 
 namespace GlyphWeaver.Client.CrossCutting.Logging
 {
     /// <summary>
-    /// Provides a unified, static interface for logging messages, warnings, and errors
-    /// on the client-side. It wraps Unity's Debug logging functionality.
-    /// REQ-AMOT-006: Used for client-side logging and crash reporting integration.
+    /// Provides a unified, static interface for client-side logging.
+    /// Wraps Unity's Debug.Log and can be extended to integrate with
+    /// external logging services or the CrashReporterClient.
+    /// REQ-AMOT-006: Implement client-side error logging and crash reporting.
     /// </summary>
     public static class ClientLogger
     {
-        private const string Prefix = "[GlyphWeaver] ";
+        private const string PrefixDebug = "[DEBUG] ";
+        private const string PrefixInfo = "[INFO] ";
+        private const string PrefixWarning = "[WARNING] ";
+        private const string PrefixError = "[ERROR] ";
+
+        // Could add a log level configuration here if needed
+        // public static LogLevel CurrentLogLevel = LogLevel.Debug;
 
         public static void LogDebug(string message, UnityEngine.Object context = null)
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log(Prefix + message, context);
-#endif
+            // if (CurrentLogLevel > LogLevel.Debug) return;
+            Debug.Log(PrefixDebug + message, context);
         }
 
         public static void LogInfo(string message, UnityEngine.Object context = null)
         {
-            Debug.Log(Prefix + message, context);
+            // if (CurrentLogLevel > LogLevel.Info) return;
+            Debug.Log(PrefixInfo + message, context);
         }
 
         public static void LogWarning(string message, UnityEngine.Object context = null)
         {
-            Debug.LogWarning(Prefix + message, context);
+            // if (CurrentLogLevel > LogLevel.Warning) return;
+            Debug.LogWarning(PrefixWarning + message, context);
         }
 
         public static void LogError(string message, UnityEngine.Object context = null)
         {
-            Debug.LogError(Prefix + message, context);
+            // if (CurrentLogLevel > LogLevel.Error) return;
+            Debug.LogError(PrefixError + message, context);
             // Potentially forward to CrashReporterClient.LogError(message) here
         }
 
         public static void LogException(Exception exception, UnityEngine.Object context = null)
         {
-            Debug.LogException(exception, context);
+            Debug.LogError(PrefixError + $"Exception: {exception.Message}\nStackTrace: {exception.StackTrace}", context);
             // Potentially forward to CrashReporterClient.LogException(exception) here
         }
-
-        // Overloads for logging with specific object context
-        public static void LogDebug(string message, string tag, UnityEngine.Object context = null)
+        
+        public static void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
         {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"{Prefix}[{tag}] {message}", context);
-#endif
-        }
-        public static void LogInfo(string message, string tag, UnityEngine.Object context = null)
-        {
-            Debug.Log($"{Prefix}[{tag}] {message}", context);
-        }
-
-        public static void LogWarning(string message, string tag, UnityEngine.Object context = null)
-        {
-            Debug.LogWarning($"{Prefix}[{tag}] {message}", context);
-        }
-
-        public static void LogError(string message, string tag, UnityEngine.Object context = null)
-        {
-            Debug.LogError($"{Prefix}[{tag}] {message}", context);
+            switch (logType)
+            {
+                case LogType.Error:
+                case LogType.Exception:
+                    Debug.LogErrorFormat(context, PrefixError + format, args);
+                    break;
+                case LogType.Assert: // Unity specific, usually an error
+                    Debug.LogErrorFormat(context, "[ASSERT] " + format, args);
+                    break;
+                case LogType.Warning:
+                    Debug.LogWarningFormat(context, PrefixWarning + format, args);
+                    break;
+                case LogType.Log:
+                default:
+                    Debug.LogFormat(context, PrefixInfo + format, args);
+                    break;
+            }
         }
     }
+
+    // public enum LogLevel
+    // {
+    //     Debug,
+    //     Info,
+    //     Warning,
+    //     Error,
+    //     None
+    // }
 }

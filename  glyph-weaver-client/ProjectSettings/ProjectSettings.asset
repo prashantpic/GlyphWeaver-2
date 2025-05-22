@@ -1,36 +1,48 @@
-// This is a Unity ProjectSettings.asset file.
-// It stores global configuration for the Unity project, including player settings 
-// (bundle ID, version, icons), graphics settings, physics configurations, input manager settings,
-// quality settings, and other project-wide parameters.
-// This file is managed through the Unity Editor's "Project Settings" window (Edit > Project Settings).
-// It is typically a binary or YAML file and should not be manually edited unless you are
-// familiar with its structure and implications.
 //
-// Key configurations within this file include:
+// This file (`ProjectSettings.asset`) is a Unity-generated binary asset that stores global configurations
+// for the Glyph Weaver Client Unity project. It is primarily managed through the Unity Editor's
+// "Project Settings" window (Edit > Project Settings).
+//
+// Its purpose is to define and persist project-wide settings, including but not limited to:
+//
 // - Player Settings:
 //   - Company Name, Product Name
-//   - Bundle Identifier (e.g., com.YourCompany.GlyphWeaver)
-//   - Version (e.g., 1.0.0), Bundle Version Code (for Android)
-//   - Icon settings for various platforms
-//   - Splash screen configuration
-//   - Scripting Define Symbols (used for conditional compilation, e.g., DEVELOPMENT_BUILD, PLATFORM_IOS)
-//   - API Compatibility Level (e.g., .NET Standard 2.1)
-//   - Scripting Backend (e.g., IL2CPP)
-//   - Target architecture settings (ARMv7, ARM64, x86, etc.)
+//   - Bundle Identifier (e.g., com.glyphweaver.client)
+//   - Version (e.g., 0.1.0), Bundle Version Code
+//   - Default Icon, Splash Screen settings
+//   - Platform-specific settings (iOS, Android):
+//     - Scripting Backend (Mono, IL2CPP)
+//     - API Compatibility Level (.NET Standard 2.1 as per SDS)
+//     - Target Architectures (ARMv7, ARM64, x86, etc.)
+//     - Minimum OS versions
+//     - Signing information (keystores for Android, provisioning for iOS)
 // - Graphics Settings:
-//   - Scriptable Render Pipeline settings (if URP/HDRP is used)
-//   - Graphics APIs for different platforms (e.g., Vulkan, Metal, OpenGLES)
-//   - Shader stripping and preloading settings
-//   - Color Space (Gamma or Linear)
-// - Input Manager (Legacy) or Input System Package settings.
-// - Quality Settings:
-//   - Default quality level and settings for different quality tiers (anti-aliasing, texture quality, etc.)
+//   - Scriptable Render Pipeline (if URP/HDRP is used, though not explicitly stated for this project, assume built-in)
+//   - Tier Settings (graphics quality levels)
+//   - Shader preloading, Graphics APIs
 // - Physics Settings:
-//   - Gravity, default material, layer collision matrix.
+//   - Gravity, Default Material, Layer Collision Matrix
+// - Input Settings (Legacy or Input System Package):
+//   - Axis configurations (if using legacy Input Manager)
+//   - Input System Package settings (if used, which is specified)
+// - Quality Settings:
+//   - Default quality level, per-platform quality levels
+// - Scripting Define Symbols:
+//   - Custom symbols for conditional compilation (e.g., DEVELOPMENT_BUILD, USE_FIREBASE, platform-specific flags)
+// - Editor Settings:
+//   - Version Control mode, Asset Serialization mode (Force Text recommended)
+// - TagManager:
+//   - Tags and Layers definitions
 // - Time Settings:
-//   - Fixed Timestep, Maximum Allowed Timestep.
-// - Tag Manager:
-//   - Predefined tags and layers.
+//   - Fixed Timestep, Maximum Allowed Timestep
+// - PresetManager:
+//   - Default presets for various component types
 //
-// Changes made in the Unity Editor's Project Settings window are automatically saved to this file.
-// Ensure this file is version controlled as it's critical for project consistency.
+// And many other settings related to audio, physics 2D, URP/HDRP (if used), services, etc.
+//
+// This file itself is not human-readable/editable directly as plain text.
+// Changes should be made via the Unity Editor GUI to ensure integrity.
+// It is crucial for defining the build environment and runtime behavior of the application.
+//
+// NO CODE OR BINARY CONTENT IS GENERATED HERE. THIS IS A DESCRIPTIVE COMMENT.
+//

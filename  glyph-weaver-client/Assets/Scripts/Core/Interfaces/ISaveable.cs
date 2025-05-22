@@ -1,43 +1,32 @@
-// Assuming PlayerData will be defined in GlyphWeaver.Client.Infrastructure.DataPersistence
-// or a shared assembly. For now, we'll declare it in a placeholder way if not found.
-#if !GLYPHWEAVER_PLAYERDATA_DEFINED
-// Placeholder for PlayerData if not yet defined.
-// In a real project, PlayerData would be in its own file and assembly.
-namespace GlyphWeaver.Client.Infrastructure.DataPersistence
-{
-    public class PlayerData { /* Placeholder properties */ }
-}
-#define GLYPHWEAVER_PLAYERDATA_DEFINED
-#endif
-
-using GlyphWeaver.Client.Infrastructure.DataPersistence;
+// Forward declaration for PlayerData - actual definition will be in Infrastructure
+// namespace GlyphWeaver.Client.Infrastructure.DataPersistence { public class PlayerData {} }
 
 namespace GlyphWeaver.Client.Core.Interfaces
 {
+    // Assuming PlayerData will be defined in GlyphWeaver.Client.Infrastructure.DataPersistence
+    // If it's defined in a shared assembly, adjust the using directive.
+    // For now, the type name 'PlayerData' will be used directly.
+    // using GlyphWeaver.Client.Infrastructure.DataPersistence; 
+
     /// <summary>
     /// Defines a contract for components whose state needs to be persisted and restored.
-    /// This interface is typically used by a data management system (e.g., LocalDataRepository)
-    /// to gather data for saving or to apply loaded data.
-    /// REQ-PDP-002: Player progress is saved.
-    /// REQ-PDP-008: Sensitive local data might be encrypted by the repository before saving.
-    /// ComponentId: LocalDataRepository (This interface is used by components that interact with it)
+    /// This interface is typically used by a data repository to manage saving and loading
+    /// of game progress, settings, or other persistent data.
+    /// REQ-PDP-002: Player data persistence.
+    /// REQ-PDP-008: Local player data persistence (SQLite/PlayerPrefs).
     /// </summary>
-    public interface ISaveable
+    public interface ISaveable<TPlayerData> where TPlayerData : class // Or struct, depending on PlayerData definition
     {
         /// <summary>
-        /// Populates the provided PlayerData object with the component's current state
-        /// that needs to be saved.
+        /// Populates the provided data container with the current state of this component.
         /// </summary>
-        /// <param name="data">The PlayerData object to populate. This object is typically
-        /// managed by the saving system and passed to all ISaveable components.</param>
-        void SaveData(PlayerData data);
+        /// <param name="data">The player data container to save state into.</param>
+        void SaveData(TPlayerData data);
 
         /// <summary>
-        /// Restores the component's state from the provided PlayerData object.
-        /// This method is called after data has been loaded.
+        /// Restores the state of this component from the provided data container.
         /// </summary>
-        /// <param name="data">The PlayerData object containing the state to load.
-        /// This object is typically managed by the loading system.</param>
-        void LoadData(PlayerData data);
+        /// <param name="data">The player data container to load state from.</param>
+        void LoadData(TPlayerData data);
     }
 }
