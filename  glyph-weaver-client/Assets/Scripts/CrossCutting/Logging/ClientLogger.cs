@@ -1,77 +1,66 @@
 using UnityEngine;
-using System;
+using System; // Required for Exception
 
 namespace GlyphWeaver.Client.CrossCutting.Logging
 {
     /// <summary>
-    /// Provides a unified, static interface for client-side logging.
-    /// This facade wraps Unity's Debug logging and can be extended to integrate
-    /// with other logging services or crash reporters.
-    /// REQ-AMOT-006: Centralized logging for client.
+    /// Provides a unified, static interface for logging messages, warnings, and errors
+    /// on the client-side. It wraps Unity's Debug logging functionality.
+    /// REQ-AMOT-006: Used for client-side logging and crash reporting integration.
     /// </summary>
     public static class ClientLogger
     {
-        private const string LOG_PREFIX = "[GlyphWeaverClient] ";
+        private const string Prefix = "[GlyphWeaver] ";
 
-        /// <summary>
-        /// Logs a debug message. These are typically for development and debugging purposes
-        /// and might be stripped from release builds depending on configuration.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        public static void LogDebug(string message)
+        public static void LogDebug(string message, UnityEngine.Object context = null)
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            Debug.Log($"{LOG_PREFIX}DEBUG: {message}");
+            Debug.Log(Prefix + message, context);
 #endif
         }
 
-        /// <summary>
-        /// Logs an informational message.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        public static void LogInfo(string message)
+        public static void LogInfo(string message, UnityEngine.Object context = null)
         {
-            Debug.Log($"{LOG_PREFIX}INFO: {message}");
+            Debug.Log(Prefix + message, context);
         }
 
-        /// <summary>
-        /// Logs a warning message. Warnings indicate potential issues that
-        /// don't necessarily stop execution but should be reviewed.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        public static void LogWarning(string message)
+        public static void LogWarning(string message, UnityEngine.Object context = null)
         {
-            Debug.LogWarning($"{LOG_PREFIX}WARN: {message}");
+            Debug.LogWarning(Prefix + message, context);
         }
 
-        /// <summary>
-        /// Logs an error message. Errors indicate problems that might disrupt
-        /// normal operation or lead to incorrect behavior.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        public static void LogError(string message)
+        public static void LogError(string message, UnityEngine.Object context = null)
         {
-            Debug.LogError($"{LOG_PREFIX}ERROR: {message}");
+            Debug.LogError(Prefix + message, context);
+            // Potentially forward to CrashReporterClient.LogError(message) here
         }
 
-        /// <summary>
-        /// Logs an exception, including its message and stack trace.
-        /// This is crucial for diagnosing runtime errors.
-        /// </summary>
-        /// <param name="exception">The exception to log.</param>
-        /// <param name="contextMessage">Optional additional context message.</param>
-        public static void LogException(Exception exception, string contextMessage = "")
+        public static void LogException(Exception exception, UnityEngine.Object context = null)
         {
-            if (string.IsNullOrEmpty(contextMessage))
-            {
-                Debug.LogError($"{LOG_PREFIX}EXCEPTION: {exception.GetType().Name}: {exception.Message}\n{exception.StackTrace}");
-            }
-            else
-            {
-                Debug.LogError($"{LOG_PREFIX}EXCEPTION ({contextMessage}): {exception.GetType().Name}: {exception.Message}\n{exception.StackTrace}");
-            }
-            // Potentially forward to a crash reporting service here
-            // e.g., CrashReporterClient.Instance.RecordException(exception);
+            Debug.LogException(exception, context);
+            // Potentially forward to CrashReporterClient.LogException(exception) here
+        }
+
+        // Overloads for logging with specific object context
+        public static void LogDebug(string message, string tag, UnityEngine.Object context = null)
+        {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"{Prefix}[{tag}] {message}", context);
+#endif
+        }
+        public static void LogInfo(string message, string tag, UnityEngine.Object context = null)
+        {
+            Debug.Log($"{Prefix}[{tag}] {message}", context);
+        }
+
+        public static void LogWarning(string message, string tag, UnityEngine.Object context = null)
+        {
+            Debug.LogWarning($"{Prefix}[{tag}] {message}", context);
+        }
+
+        public static void LogError(string message, string tag, UnityEngine.Object context = null)
+        {
+            Debug.LogError($"{Prefix}[{tag}] {message}", context);
         }
     }
 }

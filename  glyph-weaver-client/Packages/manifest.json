@@ -4,35 +4,24 @@
     "com.unity.localization": "1.4.5",
     "com.unity.inputsystem": "1.7.0",
     "com.unity.textmeshpro": "3.0.6",
-    "com.unity.addressables": "1.21.19", // For asset management
-    "com.unity.purchasing": "4.9.3", // For IAP
-    "com.unity.nuget.newtonsoft-json": "3.2.1", // For potentially complex JSON
-    "com.unity.services.core": "1.12.5", // Core for Unity Gaming Services
-    "com.unity.services.authentication": "2.7.2", // For platform authentication
-    "com.unity.services.cloudsave": "3.1.1", // For cloud save
-    // "com.unity.services.leaderboards": "1.0.3", // If using UGS Leaderboards
-    // "com.unity.services.achievements": "1.0.3", // If using UGS Achievements
-    // "com.unity.services.remote-config": "3.3.2", // If using UGS Remote Config
-    // Firebase SDKs would typically be added as .unitypackage or via External Dependency Manager for Unity (EDM4U)
-    // For example, if they were UPM packages (illustrative, actual Firebase packages are not typically like this):
-    // "com.google.firebase.analytics": "11.8.0",
-    // "com.google.firebase.crashlytics": "11.8.0",
-    "com.unity.ide.visualstudio": "2.0.22",
-    "com.unity.ide.vscode": "1.2.5",
-    "com.unity.test-framework": "1.1.33",
-    "com.unity.timeline": "1.7.6",
-    "com.unity.collab-proxy": "2.2.0",
+    "com.unity.addressables": "1.21.20",
+    "com.unity.purchasing": "4.11.0",
+    "com.unity.services.core": "1.12.5",
+    "com.unity.services.authentication": "2.7.2",
+    "com.unity.services.cloudsave": "3.1.1",
+    "com.unity.services.leaderboards": "1.1.1-pre.1",
+    "com.unity.services.remote-config": "4.1.1",
+    "com.unity.mobile.notifications": "2.3.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.audio": "1.0.0",
-    "com.unity.modules.director": "1.0.0",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
-    "com.unity.modules.inputlegacy": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.particlesystem": "1.0.0",
-    "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.physics": "1.0.0",
+    "com.unity.modules.physics2d": "1.0.0",
     "com.unity.modules.uielements": "1.0.0",
     "com.unity.modules.ui": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0",
@@ -41,6 +30,19 @@
     "com.unity.modules.unitywebrequesttexture": "1.0.0",
     "com.unity.modules.unitywebrequestwww": "1.0.0",
     "com.unity.modules.video": "1.0.0",
-    "com.unity.modules.vr": "1.0.0"
-  }
+    "com.unity.modules.vr": "1.0.0",
+    "com.unity.modules.xr": "1.0.0",
+    "com.unity.modules.ai": "1.0.0",
+    "com.unity.timeline": "1.7.6",
+    "com.unity.collab-proxy": "2.2.0"
+  },
+  "scopedRegistries": [
+    {
+      "name": "Game Package Registry by Google",
+      "url": "https://unityregistry-pa.googleapis.com",
+      "scopes": [
+        "com.google"
+      ]
+    }
+  ]
 }

@@ -1,11 +1,13 @@
 namespace GlyphWeaver.Client.Core.Interfaces
 {
     /// <summary>
-    /// A common marker interface for game services.
-    /// This interface helps in identifying service classes and can be used
-    /// for dependency injection frameworks or service locators.
+    /// Defines a common marker type for game services.
+    /// This interface can be used for dependency injection, service location,
+    /// or simply to identify service classes within the application architecture.
     /// </summary>
     public interface IService
     {
+        // This is a marker interface, so it typically has no members.
+        // Specific services can extend this with common service methods if needed.
     }
 }

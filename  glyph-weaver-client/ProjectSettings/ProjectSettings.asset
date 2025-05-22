@@ -1,13 +1,36 @@
-This file stores global configuration for the Unity project.
-It is managed by the Unity Editor and includes settings such as:
-- Player Settings: Bundle Identifier, Version, Company Name, Product Name, API Compatibility Level, Scripting Define Symbols.
-- Graphics Settings: Graphics APIs, Shader Stripping, Tier Settings.
-- Physics Settings: Gravity, Default Material, Collision Matrix.
-- Input Manager Settings (Legacy): Axes and Button definitions.
-- Quality Settings: Different quality levels and their configurations.
-- Editor Settings: Version Control, Asset Serialization.
-- And many other project-wide configurations.
-
-This file is typically in YAML format (if text serialization is enabled) or binary.
-Its content is not directly generated as C# code but is crucial for the project's build and runtime behavior.
-Modifications are done through the Unity Editor's "Project Settings" window.
+// This is a Unity ProjectSettings.asset file.
+// It stores global configuration for the Unity project, including player settings 
+// (bundle ID, version, icons), graphics settings, physics configurations, input manager settings,
+// quality settings, and other project-wide parameters.
+// This file is managed through the Unity Editor's "Project Settings" window (Edit > Project Settings).
+// It is typically a binary or YAML file and should not be manually edited unless you are
+// familiar with its structure and implications.
+//
+// Key configurations within this file include:
+// - Player Settings:
+//   - Company Name, Product Name
+//   - Bundle Identifier (e.g., com.YourCompany.GlyphWeaver)
+//   - Version (e.g., 1.0.0), Bundle Version Code (for Android)
+//   - Icon settings for various platforms
+//   - Splash screen configuration
+//   - Scripting Define Symbols (used for conditional compilation, e.g., DEVELOPMENT_BUILD, PLATFORM_IOS)
+//   - API Compatibility Level (e.g., .NET Standard 2.1)
+//   - Scripting Backend (e.g., IL2CPP)
+//   - Target architecture settings (ARMv7, ARM64, x86, etc.)
+// - Graphics Settings:
+//   - Scriptable Render Pipeline settings (if URP/HDRP is used)
+//   - Graphics APIs for different platforms (e.g., Vulkan, Metal, OpenGLES)
+//   - Shader stripping and preloading settings
+//   - Color Space (Gamma or Linear)
+// - Input Manager (Legacy) or Input System Package settings.
+// - Quality Settings:
+//   - Default quality level and settings for different quality tiers (anti-aliasing, texture quality, etc.)
+// - Physics Settings:
+//   - Gravity, default material, layer collision matrix.
+// - Time Settings:
+//   - Fixed Timestep, Maximum Allowed Timestep.
+// - Tag Manager:
+//   - Predefined tags and layers.
+//
+// Changes made in the Unity Editor's Project Settings window are automatically saved to this file.
+// Ensure this file is version controlled as it's critical for project consistency.

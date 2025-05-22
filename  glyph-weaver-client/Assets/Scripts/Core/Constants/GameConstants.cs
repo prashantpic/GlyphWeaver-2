@@ -2,34 +2,44 @@ namespace GlyphWeaver.Client.Core.Constants
 {
     public static class GameConstants
     {
-        // Scene Names
-        public static readonly string MainMenuScene = "MainMenu";
-        public static readonly string GameplayScene = "Gameplay";
-        public static readonly string LoadingScene = "Loading";
+        public static class SceneNames
+        {
+            public const string BootstrapScene = "Bootstrap";
+            public const string MainMenuScene = "MainMenu";
+            public const string GameplayScene = "Gameplay";
+            // Add other scene names as needed
+        }
 
-        // PlayerPrefs Keys
-        public static readonly string MasterVolumeKey = "Settings_MasterVolume";
-        public static readonly string MusicVolumeKey = "Settings_MusicVolume";
-        public static readonly string SfxVolumeKey = "Settings_SfxVolume";
-        public static readonly string LanguageKey = "Settings_Language";
-        public static readonly string PlayerIdKey = "Player_Id"; // Example, if a custom ID is stored
+        public static class PlayerPrefsKeys
+        {
+            public const string MasterVolume = "Settings.MasterVolume";
+            public const string MusicVolume = "Settings.MusicVolume";
+            public const string SfxVolume = "Settings.SfxVolume";
+            public const string Language = "Settings.Language";
+            public const string PlayerDataKey = "PlayerData";
+            public const string GameSettingsKey = "GameSettings";
+            // Add other PlayerPrefs keys as needed
+        }
 
-        // Tags
-        public static readonly string PlayerTag = "Player";
-        public static readonly string GlyphTag = "Glyph";
-        public static readonly string ObstacleTag = "Obstacle";
-        public static readonly string GridCellTag = "GridCell";
+        public static class TagNames
+        {
+            public const string PlayerTag = "Player";
+            public const string GlyphTag = "Glyph";
+            public const string ObstacleTag = "Obstacle";
+            public const string GridCellTag = "GridCell";
+            // Add other tag names as needed
+        }
 
-        // Layers
-        public static readonly int UILayer = 5; // Unity's default UI layer index
+        public static class LayerNames
+        {
+            public const string UILayer = "UI";
+            public const string GameplayLayer = "Gameplay";
+            // Add other layer names as needed
+        }
+        
+        public const int MaxUndoCount = 5; // Example related to REQ-8-005
+        public const string DefaultPlayerId = "DefaultPlayer";
 
-        // Animation Parameters
-        public static readonly string AnimFadeIn = "FadeIn";
-        public static readonly string AnimFadeOut = "FadeOut";
-
-        // Default Values
-        public const float DefaultMusicVolume = 0.75f;
-        public const float DefaultSfxVolume = 0.85f;
-        public const string DefaultLanguage = "en";
+        // Add other general game constants here
     }
 }

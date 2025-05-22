@@ -1,63 +1,99 @@
-#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
-using System.IO;
 
 namespace GlyphWeaver.Client.Editor
 {
     /// <summary>
     /// Automates build-time tasks such as secure injection of configuration or secrets,
     /// and other pre/post build steps.
-    /// REQ-SEC-002: Handles secure injection of secrets (e.g., encryption key).
+    /// REQ-SEC-002: Securely manage API keys, secrets, and credentials. This script
+    /// could be a part of that process, e.g., by reading secrets from a secure location
+    /// (outside version control) and injecting them into a ScriptableObject or constants file at build time.
     /// </summary>
     public class BuildProcessor : IPreprocessBuildWithReport, IPostprocessBuildWithReport
     {
-        public int callbackOrder => 0;
+        public int callbackOrder => 0; // Controls the order of execution if multiple pre/post processors exist.
 
         public void OnPreprocessBuild(BuildReport report)
         {
-            Debug.Log($"[BuildProcessor] Starting Preprocess Build for target {report.summary.platform} at path {report.summary.outputPath}");
+            Debug.Log($"[BuildProcessor] Starting pre-build tasks for target {report.summary.platform} at path {report.summary.outputPath}");
 
-            // Example: Injecting a build-time secret or configuration
-            // This is a placeholder. Real secret management would involve more secure practices.
-            // For instance, reading from a .env file not committed to VCS, or from CI environment variables.
-            string buildTimeSecret = System.Environment.GetEnvironmentVariable("GLYPH_WEAVER_BUILD_SECRET");
-            if (string.IsNullOrEmpty(buildTimeSecret))
-            {
-                buildTimeSecret = "DEFAULT_DEV_SECRET_NOT_FOR_PRODUCTION"; // Fallback for local dev builds
-                Debug.LogWarning("[BuildProcessor] GLYPH_WEAVER_BUILD_SECRET environment variable not set. Using default dev secret.");
-            }
+            // Example: Injecting a build version or secret
+            // This is a placeholder. Actual secret injection should be handled securely.
+            // For REQ-SEC-002, you might read from environment variables, a CI/CD system,
+            // or a local untracked config file.
             
-            // Example: Storing this "secret" in a ScriptableObject or a text asset.
-            // This is a simplified example. Real secrets should not be stored directly in easily readable client files.
-            // A better approach might involve using it to encrypt other config files or as part of an obfuscation scheme.
-            // For REQ-SEC-002, the actual use of this secret for DataEncryptionUtility would be more complex.
+            // Example: Log current build settings
+            LogBuildSettings();
 
-            // Create a temporary asset to hold the secret (illustrative)
-            // string tempConfigPath = "Assets/Resources/BuildTimeConfig.txt";
-            // Directory.CreateDirectory(Path.GetDirectoryName(tempConfigPath));
-            // File.WriteAllText(tempConfigPath, $"BuildSecret={buildTimeSecret}");
-            // AssetDatabase.ImportAsset(tempConfigPath);
+            // Example: Ensure critical assets are included
+            // CheckAssetInclusion("Assets/Path/To/CriticalAsset.asset");
 
-            Debug.Log("[BuildProcessor] Preprocess Build tasks completed.");
+            // Example: Modifying a ScriptableObject with build-time data
+            // UpdateBuildTimeConfiguration();
+            
+            Debug.Log("[BuildProcessor] Pre-build tasks completed.");
         }
 
         public void OnPostprocessBuild(BuildReport report)
         {
-            Debug.Log($"[BuildProcessor] Postprocess Build for target {report.summary.platform} completed with status {report.summary.result}.");
+            Debug.Log($"[BuildProcessor] Post-build tasks for target {report.summary.platform} at path {report.summary.outputPath}");
+            Debug.Log($"[BuildProcessor] Build result: {report.summary.result}");
+            Debug.Log($"[BuildProcessor] Total build time: {report.summary.totalTime}");
 
-            // Example: Clean up temporary files created during preprocess
-            // string tempConfigPath = "Assets/Resources/BuildTimeConfig.txt";
-            // if (File.Exists(tempConfigPath))
-            // {
-            //     AssetDatabase.DeleteAsset(tempConfigPath);
-            //     Debug.Log($"[BuildProcessor] Cleaned up temporary asset: {tempConfigPath}");
-            // }
-
-            // Further actions: e.g., copy build to a specific location, run external tools.
+            if (report.summary.result == BuildResult.Succeeded)
+            {
+                Debug.Log("[BuildProcessor] Build successful. Post-processing complete.");
+                // Example: Copy build to a specific location or run external tools.
+            }
+            else if (report.summary.result == BuildResult.Failed)
+            {
+                Debug.LogError("[BuildProcessor] Build failed. Check logs for details.");
+            }
         }
+
+        private void LogBuildSettings()
+        {
+            Debug.Log($"[BuildProcessor] Current Build Settings:\n" +
+                      $"  Bundle Version: {PlayerSettings.bundleVersion}\n" +
+                      $"  Bundle Identifier: {PlayerSettings.GetApplicationIdentifier(EditorUserBuildSettings.selectedBuildTargetGroup)}\n" +
+                      $"  Company Name: {PlayerSettings.companyName}\n" +
+                      $"  Product Name: {PlayerSettings.productName}\n" +
+                      $"  Scripting Backend: {PlayerSettings.GetScriptingBackend(EditorUserBuildSettings.selectedBuildTargetGroup)}\n" +
+                      $"  Api Compatibility Level: {PlayerSettings.GetApiCompatibilityLevel(EditorUserBuildSettings.selectedBuildTargetGroup)}");
+        }
+
+        // private void CheckAssetInclusion(string assetPath)
+        // {
+        //     var asset = AssetDatabase.LoadAssetAtPath<Object>(assetPath);
+        //     if (asset == null)
+        //     {
+        //         Debug.LogError($"[BuildProcessor] Critical asset not found at path: {assetPath}. Build might fail or be incomplete.");
+        //     }
+        //     else
+        //     {
+        //         Debug.Log($"[BuildProcessor] Critical asset '{assetPath}' confirmed.");
+        //     }
+        // }
+
+        // private void UpdateBuildTimeConfiguration()
+        // {
+        //     // Example: Find a ScriptableObject and update it
+        //     // string[] guids = AssetDatabase.FindAssets("t:YourConfigScriptableObject");
+        //     // if (guids.Length > 0)
+        //     // {
+        //     //     string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+        //     //     YourConfigScriptableObject config = AssetDatabase.LoadAssetAtPath<YourConfigScriptableObject>(path);
+        //     //     if (config != null)
+        //     //     {
+        //     //         config.buildTimestamp = System.DateTime.UtcNow.ToString("o");
+        //     //         EditorUtility.SetDirty(config);
+        //     //         AssetDatabase.SaveAssets();
+        //     //         Debug.Log($"[BuildProcessor] Updated build timestamp in {config.name}.");
+        //     //     }
+        //     // }
+        // }
     }
 }
-#endif
