@@ -1,0 +1,22 @@
+{
+    "name": "GlyphWeaver.Client",
+    "rootNamespace": "GlyphWeaver.Client",
+    "references": [
+        "GlyphWeaver.Client.Core",
+        "GlyphWeaver.Client.Gameplay",
+        "GlyphWeaver.Client.Services",
+        "GlyphWeaver.Client.UI",
+        "GlyphWeaver.Client.Infrastructure",
+        "GlyphWeaver.Client.CrossCutting",
+        "GlyphWeaver.Client.Security"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

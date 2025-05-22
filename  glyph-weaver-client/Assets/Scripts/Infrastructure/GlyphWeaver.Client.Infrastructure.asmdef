@@ -1,0 +1,16 @@
+{
+    "name": "GlyphWeaver.Client.Infrastructure",
+    "rootNamespace": "GlyphWeaver.Client.Infrastructure",
+    "references": [
+        "GlyphWeaver.Client.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
