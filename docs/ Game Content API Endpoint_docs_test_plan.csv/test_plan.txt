@@ -1,0 +1,101 @@
+test_id,feature_area,test_type,test_level,priority,automation_candidate,test_description,preconditions,test_steps,expected_result,test_data_needs,tools_required,estimated_effort,dependencies
+PROJ-S-001,Project Setup,Smoke,System,Critical,High,"Verify that the project's dependencies can be installed and the project can be built.","The `package.json` and `tsconfig.json` files are defined.","1. Run `npm install` in the project root.
+2. Run `npm run build`.",1. `npm install` completes successfully without errors.
+2. `npm run build` completes successfully, creating the `dist/` directory.","None",npm,0.5,"TASK-101,TASK-102,TASK-103"
+CONF-U-001,Configuration,Functional,Unit,Critical,High,"Test that the configuration module successfully loads environment variables when all are present.","The config module `src/config/index.ts` is implemented.","1. Set mock environment variables for `PORT`, `MONGODB_URI`, and `JWT_SECRET`.
+2. Import the configuration module.","The configuration object is created and contains the correct values from the mock environment variables.",Mocked process.env,Jest,1,"TASK-104,TASK-105"
+CONF-U-002,Configuration,Functional,Unit,Critical,High,"Test that the configuration module throws an error on startup if a required environment variable is missing.","The config module `src/config/index.ts` is implemented.","1. Set mock environment variables for `PORT` and `JWT_SECRET`, but leave `MONGODB_URI` undefined.
+2. Import the configuration module within a `try...catch` block or using `expect(...).toThrow()`.","The application throws a descriptive error mentioning the missing `MONGODB_URI` and does not create the config object.",Mocked process.env,Jest,1.5,"TASK-104,TASK-105"
+CONF-U-003,Configuration,Functional,Unit,Critical,High,"Test that the exported configuration object is frozen and cannot be mutated at runtime.","The config module `src/config/index.ts` is implemented.","1. Load the configuration module successfully.
+2. Attempt to change a property on the exported config object (e.g., `config.PORT = 5000`).","The attempt to modify the property throws a `TypeError`.",Mocked process.env,Jest,1,"TASK-104,TASK-105"
+DA-U-001,DataAccess,Functional,Unit,Critical,High,"Unit test the ProceduralLevelRepository `create` method to ensure it calls the Mongoose model's save method correctly.","The `ProceduralLevelRepository` is implemented.","1. Mock the `ProceduralLevel` Mongoose model. The mock's `save` method should return a promise resolving to the input data.
+2. Instantiate the repository with the mocked model.
+3. Call the repository's `create` method with valid level data.
+4. Await the result.","1. The model's `save` method is called exactly once with the provided level data.
+2. The `create` method returns the value resolved by the mock `save` method.",Mocked Mongoose model,Jest,2,"TASK-302,TASK-303"
+DA-U-002,DataAccess,Functional,Unit,Critical,High,"Unit test the ProceduralLevelRepository `findById` method to ensure it calls the Mongoose model's findById method correctly.","The `ProceduralLevelRepository` is implemented.","1. Mock the `ProceduralLevel` Mongoose model, including a mock for the `findById` method that returns a mocked chainable `exec` method.
+2. Instantiate the repository with the mocked model.
+3. Call the repository's `findById` method with a sample ID.","1. The model's `findById` method is called once with the correct ID.
+2. The `exec` method is called on the result of `findById`.",Mocked Mongoose model,Jest,2,"TASK-302,TASK-303"
+DA-I-001,DataAccess,Functional,Integration,Critical,High,"Integration test the ProceduralLevelRepository `create` method to verify data persistence in the test database.","Integration test environment with in-memory MongoDB is set up. The `ProceduralLevelRepository` is implemented.","1. Instantiate the repository with the real (test database) model.
+2. Call the `create` method with valid level data.
+3. Use a direct Mongoose query to find the document in the test database by a unique property.","A document matching the input data is found in the `procedurallevels` collection. The returned object from the `create` method matches the created data.",Valid level data object,Jest,mongodb-memory-server,3,"TASK-302,TASK-602"
+DA-I-002,DataAccess,Schema,Integration,Critical,High,"Verify that Mongoose automatically adds `createdAt` and `updatedAt` timestamps to new documents.","Integration test environment with in-memory MongoDB is set up.","1. Use the ProceduralLevelRepository to create a new level document.
+2. Retrieve the document from the database.","The retrieved document contains `createdAt` and `updatedAt` fields that are valid Date objects.",Valid level data object,Jest,mongodb-memory-server,2,"TASK-301,TASK-602"
+DA-I-003,DataAccess,Schema,Integration,Should Have,High,"Verify that the required indexes (`playerId`, `baseLevelId`) are created on the `procedurallevels` collection.","Integration test environment with in-memory MongoDB is set up. The application has started and connected to the DB.","1. After the test database connection is established, get the list of indexes for the `procedurallevels` collection.
+2. Check for the existence of indexes on `playerId` and `baseLevelId`.","The list of indexes returned from the database includes an index for `playerId` and an index for `baseLevelId`.",None,Jest,mongodb-memory-server,2.5,"TASK-301,TASK-602"
+SVC-U-001,ServiceLayer,Functional,Unit,Should Have,High,"Unit test the AuditService `logEvent` method to ensure it logs a correctly formatted JSON string.","The `AuditService` is implemented.","1. Spy on `console.log`.
+2. Instantiate `AuditService`.
+3. Call `logEvent` with a test event type and details object.
+4. Assert that `console.log` was called.
+5. Parse the string passed to `console.log` and verify its structure and content.","`console.log` is called once with a single JSON string. The parsed JSON contains a `timestamp`, and the correct `eventType` and `details`.",A test event object,Jest,1.5,"TASK-401,TASK-402"
+SVC-U-002,ServiceLayer,Functional,Unit,Critical,High,"Unit test the ProceduralLevelService `registerLevel` method to verify it correctly orchestrates repository and audit service calls.","The `ProceduralLevelService` is implemented.","1. Mock `ProceduralLevelRepository` and `AuditService`.
+2. Instantiate `ProceduralLevelService` with the mocks.
+3. Call `registerLevel` with a DTO and `playerId`.","1. The repository's `create` method is called once with the combined DTO data and `playerId`.
+2. The audit service's `logEvent` method is called once with 'LEVEL_INSTANCE_REGISTERED' and details including the `playerId` and the ID from the mocked repository response.
+3. The method returns the ID provided by the mocked repository.",Mocked repository, Mocked audit service,Jest,2.5,"TASK-403,TASK-404"
+SVC-U-003,ServiceLayer,Error Handling,Unit,Critical,High,"Unit test the ProceduralLevelService `registerLevel` to ensure it propagates errors from its dependencies.","The `ProceduralLevelService` is implemented.","1. Mock `ProceduralLevelRepository` so its `create` method rejects with a test error.
+2. Instantiate `ProceduralLevelService` with the mock.
+3. Call `registerLevel` and assert that the promise is rejected.","The promise returned by `registerLevel` is rejected with the same error thrown by the mocked repository.",Mocked repository,Jest,2,"TASK-403,TASK-404"
+API-U-001,API:Validation,Functional,Unit,Should Have,High,"Unit test the generic validation middleware factory with a valid request body.","The validation middleware factory is implemented.","1. Create a simple Joi schema.
+2. Create the middleware by calling the factory with the schema.
+3. Create mock `req` (with a valid body), `res`, and `next` (as a Jest spy) objects.
+4. Invoke the middleware with the mock objects.","The `next` function is called exactly once with no arguments.",Mock Express req/res/next,Jest,Joi,2,"TASK-503,TASK-606"
+API-U-002,API:Validation,Functional,Unit,Should Have,High,"Unit test the generic validation middleware factory with an invalid request body.","The validation middleware factory is implemented.","1. Create a simple Joi schema.
+2. Create the middleware by calling the factory with the schema.
+3. Create mock `req` (with an invalid body), `res`, and `next` (as a Jest spy) objects.
+4. Invoke the middleware with the mock objects.","The `next` function is called exactly once with an argument that is a Joi validation error.",Mock Express req/res/next,Jest,Joi,2,"TASK-503,TASK-606"
+API-U-003,API:Controller,Functional,Unit,Critical,High,"Unit test the ProceduralLevelsController `register` method for the success case.","The `ProceduralLevelsController` is implemented.","1. Mock `ProceduralLevelService`.
+2. Instantiate the controller with the mock service.
+3. Create mock `req` (with body and user), `res` (with spied-on `status` and `json` methods), and `next` objects.
+4. Call the controller's `register` method.","1. The service's `registerLevel` method is called with the correct arguments.
+2. `res.status` is called with `201`.
+3. `res.json` is called with a body containing the `proceduralLevelId` returned from the mock service.",Mocked service, Mock Express req/res/next,Jest,3,"TASK-507,TASK-508"
+API-U-004,API:Controller,Error Handling,Unit,Critical,High,"Unit test the ProceduralLevelsController `register` method for the failure case.","The `ProceduralLevelsController` is implemented.","1. Mock `ProceduralLevelService` so that `registerLevel` rejects with a test error.
+2. Instantiate the controller with the mock service.
+3. Create mock `req`, `res`, and `next` (as a Jest spy) objects.
+4. Call the controller's `register` method.","The `next` function is called once with the exact error object that the mock service rejected with.",Mocked service, Mock Express req/res/next,Jest,2.5,"TASK-507,TASK-508"
+API-I-001,API:Auth,Security,Integration,Critical,High,"Verify that a protected endpoint returns 401 Unauthorized when no `Authorization` header is provided.","The auth middleware is implemented and applied to a route. Integration test setup is complete.","1. Use Supertest to make a request to a protected endpoint.
+2. Do not include an `Authorization` header.","The server responds with an HTTP status of 401.",None,Jest,Supertest,1.5,"TASK-501,TASK-605"
+API-I-002,API:Auth,Security,Integration,Critical,High,"Verify that a protected endpoint returns 401 Unauthorized when the token is malformed or has an invalid signature.","The auth middleware is implemented and applied to a route. Integration test setup is complete.","1. Use Supertest to make a request to a protected endpoint.
+2. Provide an `Authorization` header with `Bearer <invalid_token_string>`.","The server responds with an HTTP status of 401.",An invalid JWT,Jest,Supertest,2,"TASK-501,TASK-605"
+API-I-003,API:Auth,Security,Integration,Critical,High,"Verify that a protected endpoint returns 401 Unauthorized when the token is expired.","The auth middleware is implemented and applied to a route. Integration test setup is complete.","1. Generate a JWT with a short expiry time (e.g., 1ms).
+2. Wait for the token to expire.
+3. Use Supertest to make a request to a protected endpoint with the expired token.","The server responds with an HTTP status of 401.",An expired JWT,Jest,Supertest,jsonwebtoken,2.5,"TASK-501,TASK-605"
+API-I-004,API:Auth,Security,Integration,Critical,High,"Verify that a protected endpoint returns 200 OK when a valid token is provided.","The auth middleware is implemented and applied to a dummy test route. Integration test setup is complete.","1. Generate a valid JWT with a `playerId` payload.
+2. Use Supertest to make a request to a protected dummy endpoint that returns 200.
+3. Provide the valid token in the `Authorization` header.","The server responds with an HTTP status of 200.",A valid JWT,Jest,Supertest,jsonwebtoken,2,"TASK-501,TASK-605"
+API-I-005,API:Endpoint,Functional,Integration,Critical,High,"Integration test for POST /register happy path: successful creation (201).","The full API endpoint and all its dependencies are implemented. Integration test setup is complete.","1. Generate a valid JWT.
+2. Create a valid request body for a procedural level.
+3. Make a `POST` request to `/api/v1/procedural-levels/register` with the token and body.
+4. Assert the response status and body structure.
+5. Query the test database directly to confirm the record was created with the correct `playerId`.","1. The response status is `201 Created`.
+2. The response body is a JSON object with a `proceduralLevelId` key.
+3. A document exists in the database with the data from the request body and the `playerId` from the JWT.",Valid JWT, Valid request body,Jest,Supertest,mongodb-memory-server,6,"TASK-603"
+API-I-006,API:Endpoint,Functional,Integration,Critical,High,"Integration test for POST /register validation failure (400) due to a missing required field.","The full API endpoint is implemented. Integration test setup is complete.","1. Generate a valid JWT.
+2. Create a request body that is missing a required field (e.g., `generationSeed`).
+3. Make a `POST` request to `/api/v1/procedural-levels/register` with the token and body.","1. The response status is `400 Bad Request`.
+2. The response body contains a descriptive error message indicating which field is missing.",Valid JWT, Invalid request body,Jest,Supertest,4,"TASK-604"
+API-I-007,API:Endpoint,Functional,Integration,Critical,High,"Integration test for POST /register validation failure (400) due to incorrect data type.","The full API endpoint is implemented. Integration test setup is complete.","1. Generate a valid JWT.
+2. Create a request body where a field has the wrong data type (e.g., `complexityScore: 'high'`).
+3. Make a `POST` request to `/api/v1/procedural-levels/register` with the token and body.","1. The response status is `400 Bad Request`.
+2. The response body contains a descriptive error message indicating the type mismatch.",Valid JWT, Invalid request body,Jest,Supertest,4,"TASK-604"
+API-I-008,API:Error Handling,Functional,Integration,Critical,High,"Verify the global error handler correctly formats unhandled errors from the application layers.","Global error handler is implemented.","1. Create a dummy test route that intentionally throws a generic `Error`.
+2. Make a request to that route using Supertest.","1. The response status is `500 Internal Server Error`.
+2. The response body is a standardized JSON error object.",None,Jest,Supertest,3,"TASK-202"
+INFRA-S-001,Infrastructure,Smoke,System,Should Have,Medium,"Verify the production Docker image can be built and started successfully.","A `Dockerfile` exists in the project root.","1. Run `docker build -t test-image .` in the project root.
+2. Run `docker run -e PORT=... -e MONGODB_URI=... -e JWT_SECRET=... test-image`.
+3. Check the container logs for the server startup message.","1. The Docker image builds without errors.
+2. The container starts and the application logs a message indicating it is running and connected to the database (if a mock DB is provided).",A running Docker daemon,Docker,5,"TASK-701"
+INFRA-S-002,Infrastructure,Functional,System,Could Have,Manual Only,"Verify the local development environment using Docker Compose starts correctly.","A `docker-compose.yml` file exists in the project root.","1. Run `docker-compose up` in the project root.
+2. Wait for all services to be healthy.
+3. Check the logs for both the `app` and `mongo` services.
+4. Make a small code change in a `src` file.","1. Both the `app` and `mongo` containers start without errors.
+2. The `app` service logs show a successful connection to the `mongo` service.
+3. After a code change, the `app` service log shows that the server has restarted.",A running Docker daemon,Docker Compose,4,"TASK-702"
+PERF-L-001,API:Endpoint,Non-Functional,Performance,Should Have,Medium,"Basic load test for the POST /register endpoint to establish a baseline performance metric.","The full API endpoint is implemented and can be deployed to a staging-like environment.","1. Using a load testing tool (e.g., k6, Artillery), script a scenario that sends concurrent `POST` requests to `/api/v1/procedural-levels/register`.
+2. Run the test with a moderate load (e.g., 50 virtual users for 1 minute).
+3. Monitor p95 response time and error rate.","The p95 response time remains under 200ms. The error rate is 0%. The server does not crash.",A deployed instance of the service,k6/Artillery,8,"US-021"
+SEC-V-001,API:Auth,Security,Security,Critical,Medium,"Scan for known vulnerabilities in JWT implementation and dependencies.","The JWT authentication middleware is implemented.","1. Run `npm audit` or a Snyk scan on the project.
+2. Manually review the `auth.middleware.ts` for common JWT pitfalls (e.g., using `none` algorithm, not checking signature).","1. No high or critical severity vulnerabilities are reported for `jsonwebtoken` or related packages.
+2. The code review confirms that the token signature is always verified.",None,npm audit/Snyk,4,"US-013"

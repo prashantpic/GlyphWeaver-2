@@ -1,0 +1,58 @@
+sequenceDiagram
+    actor Player as User
+    participant GameApp as REPOGLYPHCLIENTUNITYAPP
+    participant GameSessionManager as REPOGLYPHCLIENTUNITYSESSION
+    participant LocalDataRepository as REPOGLYPHCLIENTUNITYREPO
+    participant DataMigrationService as REPOGLYPHCLIENTUNITYMIGRATOR
+    participant PlatformIntegrationService as REPOGLYPHCLIENTUNITYPLATFORM
+
+    User-REPOGLYPHCLIENTUNITYAPP: 1. Launches updated game
+    activate REPOGLYPHCLIENTUNITYAPP
+
+    REPOGLYPHCLIENTUNITYAPP-REPOGLYPHCLIENTUNITYSESSION: 2. initializeGame()
+    activate REPOGLYPHCLIENTUNITYSESSION
+
+    REPOGLYPHCLIENTUNITYSESSION-REPOGLYPHCLIENTUNITYREPO: 3. loadSaveData()
+    activate REPOGLYPHCLIENTUNITYREPO
+    REPOGLYPHCLIENTUNITYREPO-REPOGLYPHCLIENTUNITYREPO: 3.1. readFromFile("playersave.dat")
+    REPOGLYPHCLIENTUNITYREPO-REPOGLYPHCLIENTUNITYREPO: 3.2. deserialize(rawData)
+    REPOGLYPHCLIENTUNITYREPO--REPOGLYPHCLIENTUNITYSESSION: 3. return saveDataObject
+    deactivate REPOGLYPHCLIENTUNITYREPO
+
+    note over REPOGLYPHCLIENTUNITYSESSION: A version mismatch triggers the migration process.
+    alt if saveData.version n        REPOGLYPHCLIENTUNITYSESSION-REPOGLYPHCLIENTUNITYMIGRATOR: 4.1.1. migrate(oldSaveData)
+        activate REPOGLYPHCLIENTUNITYMIGRATOR
+        loop for each version step from old to new
+            REPOGLYPHCLIENTUNITYMIGRATOR-REPOGLYPHCLIENTUNITYMIGRATOR: 4.1.1.1.1. applyTransformation(data)
+        end
+        REPOGLYPHCLIENTUNITYMIGRATOR-REPOGLYPHCLIENTUNITYMIGRATOR: 4.1.1.2. validate(migratedData)
+        note right of REPOGLYPHCLIENTUNITYMIGRATOR: Migration validation is critical to prevent saving corrupt data.
+        REPOGLYPHCLIENTUNITYMIGRATOR--REPOGLYPHCLIENTUNITYSESSION: 4.1.1. return migratedDataObject
+        deactivate REPOGLYPHCLIENTUNITYMIGRATOR
+
+        REPOGLYPHCLIENTUNITYSESSION-REPOGLYPHCLIENTUNITYREPO: 4.1.2. overwriteSaveData(migratedDataObject)
+        activate REPOGLYPHCLIENTUNITYREPO
+        note right of REPOGLYPHCLIENTUNITYREPO: Using a temp file + rename is an atomic operation to prevent data loss if the app crashes during write.
+        REPOGLYPHCLIENTUNITYREPO-REPOGLYPHCLIENTUNITYREPO: 4.1.2.1. writeToTempFile()
+        REPOGLYPHCLIENTUNITYREPO-REPOGLYPHCLIENTUNITYREPO: 4.1.2.2. renameTempToOriginalFile()
+        REPOGLYPHCLIENTUNITYREPO--REPOGLYPHCLIENTUNITYSESSION: 4.1.2. return success
+        deactivate REPOGLYPHCLIENTUNITYREPO
+
+        REPOGLYPHCLIENTUNITYSESSION-REPOGLYPHCLIENTUNITYSESSION: 4.1.3. loadStateFrom(migratedDataObject)
+    else else (version matches)
+        REPOGLYPHCLIENTUNITYSESSION-REPOGLYPHCLIENTUNITYSESSION: 4.2.1. loadStateFrom(saveDataObject)
+    end
+
+    opt Sync updated data to Cloud (if applicable)
+        note over REPOGLYPHCLIENTUNITYPLATFORM: Cloud sync is initiated after local data is successfully loaded and migrated, using the new data format.
+        REPOGLYPHCLIENTUNITYSESSION-REPOGLYPHCLIENTUNITYPLATFORM: 5.1. syncToCloud(currentSaveData)
+        activate REPOGLYPHCLIENTUNITYPLATFORM
+        REPOGLYPHCLIENTUNITYPLATFORM--REPOGLYPHCLIENTUNITYSESSION: 5.1. syncResult (async callback)
+        deactivate REPOGLYPHCLIENTUNITYPLATFORM
+    end
+
+    REPOGLYPHCLIENTUNITYSESSION--REPOGLYPHCLIENTUNITYAPP: 6. initializationComplete
+    deactivate REPOGLYPHCLIENTUNITYSESSION
+
+    REPOGLYPHCLIENTUNITYAPP--User: 7. Display Main Menu
+    deactivate REPOGLYPHCLIENTUNITY_APP

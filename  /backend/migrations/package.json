@@ -1,0 +1,23 @@
+{
+  "name": "@glyph-weaver/db-migrations",
+  "version": "1.0.0",
+  "description": "Database migration scripts for the Glyph Weaver project.",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "migrate:create": "migrate-mongo create",
+    "migrate:up": "migrate-mongo -f migrate-mongo-config.ts up",
+    "migrate:down": "migrate-mongo -f migrate-mongo-config.ts down",
+    "migrate:status": "migrate-mongo -f migrate-mongo-config.ts status"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "migrate-mongo": "^11.0.0",
+    "mongodb": "^5.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

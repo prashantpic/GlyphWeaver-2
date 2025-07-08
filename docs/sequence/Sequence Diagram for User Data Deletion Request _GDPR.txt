@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor "«User»Player" as actorplayer
+    actor "«Internal User»Support Team" as actorsupport
+    participant "«REPO-GLYPH-SYSTEM»Admin Interface" as REPOGLYPHSYSTEMADMINUI
+    participant "«Microservice»Player Service" as REPOGLYPHPLAYER
+    participant "«REPO-GLYPH-SYSTEM»Audit Logging Service" as REPOGLYPHSYSTEMAUDIT
+
+    actorplayer-actorsupport: 1. Requests data deletion (e.g., via email)
+    activate actorsupport
+    note over actorsupport: Support Team follows a runbook (from REPO-GLYPH-DOCUMENTATION) to verify the player's identity via out-of-band communication (e.g., email exchange).
+
+    alt Verification Successful
+        actorsupport-REPOGLYPHSYSTEMADMINUI: 2.1.1. Logs in and finds user by verified ID
+        activate REPOGLYPHSYSTEMADMINUI
+        actorsupport-REPOGLYPHSYSTEMADMINUI: 2.1.2. Triggers 'Delete User Data' action
+        note right of REPOGLYPHSYSTEMADMINUI: All actions performed via the Admin Interface, including the deletion trigger, are logged for security and auditing purposes.
+        
+        REPOGLYPHSYSTEMADMINUI-REPOGLYPHPLAYER: 2.1.3. [API] DELETE /admin/players/{userId}
+        activate REPOGLYPHPLAYER
+        
+        REPOGLYPHPLAYER-REPOGLYPHPLAYER: 2.1.3.1. Performs soft delete of PII (e.g., set isDeleted=true, nullify personal fields)
+        
+        REPOGLYPHPLAYER-REPOGLYPHSYSTEMAUDIT: 2.1.3.2. LogDeletionEvent(userId, adminId, reason)
+        activate REPOGLYPHSYSTEMAUDIT
+        note right of REPOGLYPHSYSTEMAUDIT: The audit log entry is immutable and contains details required for compliance verification.
+        REPOGLYPHSYSTEMAUDIT--REPOGLYPHPLAYER: 2.1.3.3. Ack
+        deactivate REPOGLYPHSYSTEMAUDIT
+        
+        REPOGLYPHPLAYER--REPOGLYPHSYSTEMADMINUI: 2.1.4. [API Response] 200 OK
+        deactivate REPOGLYPHPLAYER
+        
+        REPOGLYPHSYSTEMADMINUI--actorsupport: 2.1.5. Displays 'User data deleted successfully'
+        deactivate REPOGLYPHSYSTEMADMINUI
+        
+        actorsupport-actorplayer: 2.1.6. Confirms deletion completion
+    else Verification Failed
+        actorsupport-actorplayer: 2.2.1. Notifies player of verification failure
+    end
+    
+    deactivate actorsupport

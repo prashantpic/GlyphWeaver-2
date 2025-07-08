@@ -1,0 +1,36 @@
+sequenceDiagram
+    participant Prometheus as prometheussystem
+    participant "Backend Service" as backendservice
+    participant Alertmanager as alertmanagersystem
+    participant "Alerting Channel (e.g., PagerDuty)" as alertingchannel
+    actor "Operations Team" as opsteamactor
+
+    loop Every 'scrapeinterval' (e.g., 15s)
+        prometheussystem-backendservice: 1.1 GET /metrics
+        activate backendservice
+        note over prometheussystem: Prometheus scrapes metrics from instrumented services at a configured interval.
+        backendservice--prometheussystem: 1.1 200 OK [metricdata]
+        deactivate backendservice
+
+        prometheussystem-prometheussystem: 1.2 Evaluate alerting rules against scraped metrics
+
+        alt Rule 'APIHighLatency' is met (e.g., latency  500ms for 5m)
+            prometheussystem-alertmanagersystem: 1.3.1 POST /api/v1/alerts [Firing Alert: APIHighLatency]
+            activate alertmanagersystem
+
+            alertmanagersystem-alertmanagersystem: 1.3.2 Process alert (group, inhibit, silence)
+
+            alertmanagersystem-alertingchannel: 1.3.3 POST /webhook [NotificationPayload]
+            activate alertingchannel
+            note right of alertmanagersystem: Alertmanager applies grouping and routing rules to send the notification to the correct receiver.
+            deactivate alertmanagersystem
+
+            alertingchannel-opsteamactor: 1.3.4 Notify(SMS, Call, Push) [Alert: APIHighLatency]
+            activate opsteamactor
+            deactivate alertingchannel
+
+            opsteamactor-opsteamactor: 1.3.5 Acknowledge alert and begin incident response
+            note over opsteamactor: The Operations Team follows a pre-defined runbook to address the incident.
+            deactivate opsteamactor
+        end
+    end

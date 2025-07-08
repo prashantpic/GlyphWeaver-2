@@ -1,0 +1,126 @@
+test_id,feature_area,test_type,test_level,priority,automation_candidate,test_description,preconditions,test_steps,expected_result,test_data_needs,tools_required,estimated_effort,dependencies
+CONF-001,Build Process,Functional,System,Critical,High,"Verify all project dependencies can be installed cleanly","A `package.json` file exists with all dependencies defined. The machine has Node.js and npm installed and has access to the npm registry.","1. Clone the repository to a clean directory.
+2. Run `npm install` from the root directory.","The command completes successfully with exit code 0. A `node_modules` directory is created containing all specified dependencies.",N/A,"npm, Node.js",S,US-001
+CONF-002,Build Process,Functional,System,Critical,High,"Verify the TypeScript code compiles successfully according to tsconfig.json rules","A `tsconfig.json` file is configured correctly. All dependencies are installed. The `src` directory contains valid TypeScript code.","1. Run the command `npm run build`.","The command completes successfully with exit code 0. A `dist` directory is created containing the compiled JavaScript output.",N/A,"npm, TypeScript (tsc)",S,US-002
+CONF-003,Developer Experience,Functional,System,Critical,High,"Verify the development server starts and reloads on changes","A `package.json` file has the `dev` script defined. All dependencies are installed.","1. Run the command `npm run dev`.
+2. Observe the console output for the server start message.
+3. Make a whitespace change to `src/index.ts` and save the file.
+4. Observe the console output again.","1. The server starts successfully, logging a message like ""Analytics API server running..."".
+2. After the file change, nodemon detects the change and restarts the server, showing the startup message again.","A basic `src/index.ts` file.",npm, nodemon, ts-node,S,US-001
+UNIT-CONF-001,Configuration,Functional,Unit,Critical,High,"Verify the configuration loader reads variables from a .env file","The `dotenv` package is installed. The config loader module exists. A test-specific `.env` file is prepared.","1. Set up a test environment with `PORT=9999` and `MONGODB_URI=mongodb://test-uri` in a `.env` file.
+2. Import the configuration loader module.
+3. Assert that `config.port` is 9999.
+4. Assert that `config.mongodbUri` is 'mongodb://test-uri'.","The assertions pass, confirming that environment variables are correctly loaded and parsed.",`PORT=9999`, `MONGODB_URI=mongodb://test-uri`,Jest,S,US-003
+UNIT-CONF-002,Configuration,Functional,Unit,High,High,"Verify the configuration loader applies default values","The config loader module exists and defines a default for `port`.","1. Set up a test environment WITHOUT a `PORT` variable defined.
+2. Import the configuration loader module.
+3. Assert that `config.port` is equal to the specified default value (3001).","The assertion passes.",`MONGODB_URI` must be set, but no `PORT`.,Jest,S,US-003
+UNIT-CONF-003,Configuration,Functional,Unit,Critical,High,"Verify the application fails to start if MONGODB_URI is missing","The config loader module contains the startup validation check.","1. Set up a test environment where `MONGODB_URI` is NOT defined.
+2. Wrap the import of the configuration module in a function.
+3. Use `expect(...).toThrow()` to assert that calling the function throws an error.
+4. Optionally, check that the error message contains 'MONGODB_URI'.","The test runner catches the expected error, and the test passes.",No `MONGODB_URI` environment variable.,Jest,M,US-003
+UNIT-CONF-004,Configuration,Non-Functional,Unit,High,High,"Verify the exported configuration object is immutable","The config loader uses `Object.freeze`.","1. Import the `config` object.
+2. In a `try/catch` block or using `expect().toThrow()`, attempt to change a property (e.g., `config.port = 5000`).","A `TypeError` is thrown, indicating the object is frozen and cannot be modified.",`MONGODB_URI` must be set.,Jest,S,US-003
+UNIT-MOD-001,Data Access Layer,Functional,Unit,High,High,"Verify the RawAnalyticsEvent Mongoose model can save a valid document","An in-memory MongoDB server is running and a connection is established.","1. Create an instance of the `RawAnalyticsEventModel` with a valid data object.
+2. Call `.save()` on the instance.
+3. Fetch the document back from the database.
+4. Assert that the fetched document's properties match the saved object.","The document is saved and retrieved successfully, and the properties match.",Valid event data: `{ sessionId: 'uuid', eventName: 'test_event', eventTimestamp: new Date(), payload: { key: 'value' } }`,Jest, mongodb-memory-server,M,US-004
+UNIT-MOD-002,Data Access Layer,Functional,Unit,High,High,"Verify the RawAnalyticsEvent Mongoose model automatically adds a `createdAt` timestamp","An in-memory MongoDB server is running and a connection is established.","1. Create and save an instance of the `RawAnalyticsEventModel`.
+2. Fetch the document back from the database.
+3. Assert that the `createdAt` property exists and is a `Date` object.
+4. Assert that the `updatedAt` property does NOT exist.","The `createdAt` field is present and correctly typed, and `updatedAt` is absent.",Valid event data.,Jest, mongodb-memory-server,S,US-004
+UNIT-MOD-003,Data Access Layer,Functional,Unit,Critical,High,"Verify the RawAnalyticsEvent Mongoose model rejects documents with missing required fields","An in-memory MongoDB server is running and a connection is established.","1. Attempt to save an instance of the `RawAnalyticsEventModel` with a required field missing (e.g., `eventName`).
+2. Assert that the `.save()` call rejects with a `ValidationError`.","The promise returned by `.save()` is rejected, and the error is a Mongoose `ValidationError`.",Event data missing a required field like `eventName`.,Jest, mongodb-memory-server,M,US-004
+UNIT-REPO-001,Data Access Layer,Functional,Unit,Critical,High,"Verify the repository's saveBatch method calls insertMany on the model with correctly transformed data","The `RawAnalyticsEventRepository` is instantiated with a mocked Mongoose model.","1. Create a mock `analyticsEventModel` with a spy on the `insertMany` method.
+2. Instantiate `RawAnalyticsEventRepository` with the mock model.
+3. Call `repo.saveBatch()` with a valid `IngestEventsRequestDto`.
+4. Assert that `insertMany` was called once.
+5. Assert that the argument passed to `insertMany` is an array of documents where each document correctly combines the `sessionId` and `playerId` with the individual event data.","The spy confirms `insertMany` was called with the correctly structured array of documents.","A valid `IngestEventsRequestDto` with 2-3 events.",Jest,S,US-005
+UNIT-REPO-002,Data Access Layer,Functional,Unit,High,High,"Verify the repository's saveBatch method uses the `{ ordered: false }` option for bulk insertion","The `RawAnalyticsEventRepository` is instantiated with a mocked Mongoose model.","1. Create a mock `analyticsEventModel` with a spy on the `insertMany` method.
+2. Instantiate `RawAnalyticsEventRepository` with the mock model.
+3. Call `repo.saveBatch()` with a valid `IngestEventsRequestDto`.
+4. Assert that `insertMany` was called with two arguments.
+5. Assert that the second argument is an object `{ ordered: false }`.","The spy confirms `insertMany` was called with the correct options object.",A valid `IngestEventsRequestDto`.,Jest,M,US-005
+UNIT-REPO-003,Data Access Layer,Functional,Unit,High,High,"Verify the repository correctly handles and propagates database errors","The `RawAnalyticsEventRepository` is instantiated with a mocked Mongoose model that is configured to throw an error.","1. Configure the mock `insertMany` method to throw a specific error (e.g., `MongoBulkWriteError`).
+2. Call `repo.saveBatch()` with a valid DTO.
+3. Assert that the call to `saveBatch` is rejected and the error is the one thrown by the mock.","The test asserts that the `saveBatch` method call results in a rejected promise with the expected error.",A valid `IngestEventsRequestDto`.,Jest,M,US-005
+UNIT-SVC-001,Application Service Layer,Functional,Unit,High,High,"Verify the ingestion service correctly calls the repository's saveBatch method","The `AnalyticsIngestionService` is instantiated with a mocked `IRawAnalyticsEventRepository`.","1. Create a mock repository with a spy on the `saveBatch` method.
+2. Instantiate `AnalyticsIngestionService` with the mock repository.
+3. Call `service.ingestEvents()` with a DTO.
+4. Assert that the repository's `saveBatch` method was called exactly once.
+5. Assert that the DTO passed to the service was the same DTO passed to the repository.","The spy confirms the repository method was called correctly with the unmodified DTO.",A valid `IngestEventsRequestDto`.,Jest,S,US-007
+UNIT-SVC-002,Application Service Layer,Functional,Unit,High,High,"Verify the ingestion service propagates errors from the repository","The `AnalyticsIngestionService` is instantiated with a mocked `IRawAnalyticsEventRepository` configured to throw an error.","1. Configure the mock repository's `saveBatch` method to reject with a specific error.
+2. Instantiate `AnalyticsIngestionService` with the mock repository.
+3. Call `service.ingestEvents()` with a DTO.
+4. Assert that the call to `ingestEvents` is rejected and the error is the same one from the mock repository.","The test asserts that the `ingestEvents` method call results in a rejected promise with the expected error.",A valid `IngestEventsRequestDto`.,Jest,S,US-007
+UNIT-MID-001,API Middleware,Functional,Unit,High,High,"Verify the validation middleware calls next() without error for a valid request body","A Joi schema is defined. `validateRequest` middleware is imported.","1. Create mock Express `req`, `res`, and `next` objects. `req.body` should be a valid object. `next` should be a Jest spy function.
+2. Call `validateRequest(schema)(req, res, next)`.
+3. Assert that `next` was called once.
+4. Assert that `next` was called with no arguments.","The assertions pass.",A valid request body object matching the `ingestEventsSchema`.,Jest,S,US-009
+UNIT-MID-002,API Middleware,Functional,Unit,High,High,"Verify the validation middleware calls next() with a formatted error for an invalid request body","A Joi schema is defined. `validateRequest` middleware is imported.","1. Create mock `req`, `res`, and `next` objects. `req.body` should be an invalid object (e.g., missing a required field). `next` should be a Jest spy function.
+2. Call `validateRequest(schema)(req, res, next)`.
+3. Assert that `next` was called once.
+4. Assert that `next` was called with an `Error` object.
+5. Assert that the error object has a `statusCode` property equal to 400.","The assertions pass.",An invalid request body object (e.g., `{}`).,Jest,M,US-009
+UNIT-CTRL-001,API Controller,Functional,Unit,High,High,"Verify the controller's ingestEvents method sends a 202 on success","The `AnalyticsController` is instantiated with a mocked service.","1. Create a mock `analyticsIngestionService` where `ingestEvents` resolves successfully.
+2. Create mock Express `req`, `res`, and `next` objects. The `res.status` and `res.send` methods should be spies.
+3. Instantiate the controller with the mock service.
+4. Call `await controller.ingestEvents(req, res, next)`.
+5. Assert that `res.status` was called with 202.
+6. Assert that `res.send` was called.","The assertions pass.",A valid request body in `req.body`.,Jest,M,US-010
+UNIT-CTRL-002,API Controller,Functional,Unit,High,High,"Verify the controller's ingestEvents method calls next() on service failure","The `AnalyticsController` is instantiated with a mocked service configured to throw an error.","1. Create a mock `analyticsIngestionService` where `ingestEvents` rejects with a specific error.
+2. Create mock `req`, `res`, and `next` objects. `next` should be a Jest spy.
+3. Instantiate the controller with the mock service.
+4. Call `await controller.ingestEvents(req, res, next)`.
+5. Assert that `next` was called once.
+6. Assert that `next` was called with the specific error object from the service.","The assertions pass.",A valid request body in `req.body`.,Jest,M,US-010
+INT-APP-001,Application Bootstrap,Functional,Integration,Critical,High,"Verify the /health endpoint is available and returns the correct status","The full Express application is bootstrapped and running via Supertest.","1. Use Supertest to make a GET request to the `/health` endpoint of the application.","The request succeeds with a 200 OK status code and a JSON body of `{\"status\":\"ok\"}`.",N/A,"Jest, Supertest",S,US-012
+INT-APP-002,Application Bootstrap,Functional,Integration,High,High,"Verify the global error handler catches errors and returns a formatted JSON response","The full Express application is bootstrapped. A test-only route that throws an error is added.","1. Add a temporary route `/testerror` to the app that immediately calls `next(new Error('Test'))`.
+2. Use Supertest to make a GET request to `/testerror`.
+3. Assert that the response status code is 500.
+4. Assert that the response body is a JSON object like `{\"error\":{\"message\":\"Test\"}}`.","The assertions pass.",N/A,"Jest, Supertest",M,US-012
+INT-API-001,API Endpoint,Functional,Integration,Critical,High,"Verify the API accepts and processes a valid batch of analytics events","The full application is running with an in-memory database.","1. Construct a valid request body with a `sessionId` and an array of 2-3 events.
+2. Use Supertest to send a POST request to `/api/v1/analytics/events` with the body.
+3. Assert that the HTTP response status is 202 Accepted.
+4. Connect to the in-memory database and query the `rawanalyticsevents` collection.
+5. Assert that the documents in the collection match the data sent in the request.","The API returns 202 and the data is correctly persisted in the database.","A valid request body with `sessionId` (UUIDv4) and `events` array with valid `eventName`, `eventTimestamp` (ISO string), and `payload`.",Jest, Supertest, mongodb-memory-server,M,US-015
+INT-API-002,API Endpoint,Functional,Integration,Critical,High,"Verify the API rejects a request with a missing required field (e.g., sessionId)","The full application is running with an in-memory database.","1. Construct a request body that is missing the `sessionId` field.
+2. Use Supertest to send a POST request to `/api/v1/analytics/events`.
+3. Assert that the HTTP response status is 400 Bad Request.
+4. Assert that the response body is a JSON object containing a descriptive error message.","The API returns 400 and a JSON error payload.",Request body: `{ \"events\": [...] }` (missing sessionId),Jest, Supertest, mongodb-memory-server,S,US-015
+INT-API-003,API Endpoint,Functional,Integration,High,High,"Verify the API rejects a request with an empty events array","The full application is running with an in-memory database.","1. Construct a request body with a valid `sessionId` but an empty `events` array (`[]`).
+2. Use Supertest to send a POST request to `/api/v1/analytics/events`.
+3. Assert that the HTTP response status is 400 Bad Request.
+4. Assert that the response body's error message indicates the `events` array must not be empty.","The API returns 400 and a JSON error payload.",Request body: `{ \"sessionId\": \"uuid\", \"events\": [] }`,Jest, Supertest, mongodb-memory-server,S,US-015
+INT-API-004,API Endpoint,Functional,Integration,High,High,"Verify the API rejects a request with too many events in the batch","The full application is running with an in-memory database.","1. Construct a request body with a valid `sessionId` and an `events` array containing 101 items.
+2. Use Supertest to send a POST request to `/api/v1/analytics/events`.
+3. Assert that the HTTP response status is 400 Bad Request.
+4. Assert that the response body's error message indicates the `events` array exceeds the maximum size.","The API returns 400 and a JSON error payload.",A programmatically generated array of 101 valid event objects.,Jest, Supertest, mongodb-memory-server,M,US-015
+INT-API-005,API Endpoint,Functional,Integration,High,High,"Verify the API rejects a request with an invalid eventTimestamp format","The full application is running with an in-memory database.","1. Construct a request body where one of the events has an invalid `eventTimestamp` (e.g., 'not-a-date').
+2. Use Supertest to send a POST request to `/api/v1/analytics/events`.
+3. Assert that the HTTP response status is 400 Bad Request.","The API returns 400 and a JSON error payload.",An event with `eventTimestamp: "invalid date format"`,Jest, Supertest, mongodb-memory-server,S,US-015
+PERF-001,API Endpoint,Non-Functional,Performance,High,High,"Establish baseline performance under normal load","The application is deployed to a production-like environment.","1. Configure a load testing tool (e.g., k6) to simulate a realistic load (e.g., 200 concurrent users sending a batch of 5 events every 10 seconds).
+2. Run the test for 10 minutes.
+3. Record the P95 and P99 response times, error rate, and average CPU/Memory usage of the service.","The P95 latency remains below 200ms, the error rate is 0%, and system resource usage is stable. This becomes the performance benchmark.","A standard valid request body payload.",k6 / JMeter,L,US-012
+PERF-002,API Endpoint,Non-Functional,Performance,Medium,High,"Determine the system's breaking point under stress","The application is deployed to a production-like environment.","1. Configure a load testing tool to gradually ramp up the number of virtual users sending requests.
+2. Continue increasing the load until the P99 response time exceeds 2 seconds or the error rate exceeds 5%.
+3. Record the requests-per-second (RPS) at which the system became unstable.","The test identifies the maximum sustainable RPS for the current configuration, e.g., ""system becomes unstable at 1500 RPS"".",A standard valid request body payload.,k6 / JMeter,L,US-012
+SEC-001,API Endpoint,Non-Functional,Security,High,High,"Verify rate limiting rejects excessive requests","The application is deployed with rate-limiting middleware configured (e.g., 100 requests per minute).","1. Write a script to send requests in a tight loop from a single IP address.
+2. Send 100 requests. Assert they all receive a 202 or 400 response.
+3. Send the 101st request.
+4. Assert that the response is a 429 Too Many Requests.
+5. Wait for the rate-limit window to reset and send another request. Assert it succeeds.","The 101st request is rejected with a 429 status, and requests succeed again after the cooldown period.",N/A,"Jest, Supertest (or custom script)",M,R-SEC-001
+SEC-002,CI/CD,Non-Functional,Security,High,High,"Verify the CI pipeline scans for vulnerable dependencies","The CI pipeline is configured with a dependency scanning tool (e.g., `npm audit` or Snyk).","1. Manually introduce a dependency with a known, medium-severity vulnerability into `package.json`.
+2. Push the change in a pull request to trigger the CI pipeline.
+3. Observe the pipeline execution.","The CI pipeline fails at the security scan step, reporting the vulnerability and preventing the PR from being merged.",A package with a known vulnerability (e.g., an old version of `lodash`).,CI/CD Platform (e.g., GitHub Actions), npm,S,R-EXT-001
+DEVOPS-DOCKER-001,Deployment,Functional,System,High,Medium,"Verify the Docker image can be built successfully","The Dockerfile exists in the project root. Docker is installed.","1. Navigate to the project root in the terminal.
+2. Run the command `docker build -t analytics-api-test .`.","The command completes successfully without errors, creating a new Docker image tagged `analytics-api-test`.",N/A,Docker,S,US-016
+DEVOPS-DOCKER-002,Deployment,Functional,System,High,Medium,"Verify the containerized application starts and is healthy","A Docker image of the application has been built successfully.","1. Run the container from the built image, passing the required `MONGODB_URI` environment variable and mapping the container's port to a host port (e.g., `docker run -e MONGODB_URI=... -p 3001:3001 analytics-api-test`).
+2. Make a GET request from the host machine to `http://localhost:3001/health`.","The container starts without crashing. The request to the health endpoint returns a 200 OK response.",A valid `MONGODB_URI` for a reachable database.,Docker, curl / Postman,M,US-016
+DEVOPS-CI-001,CI/CD,Functional,System,Critical,High,"Verify the CI pipeline passes for a valid pull request","The CI workflow file is configured in the repository.","1. Create a new branch.
+2. Make a valid, non-breaking code change.
+3. Create a pull request to the main branch.
+4. Wait for the CI pipeline to be triggered and complete.","All steps of the CI pipeline (e.g., install, lint, test, build) pass successfully, and the PR shows a green checkmark.",N/A,CI/CD Platform (e.g., GitHub Actions),S,US-017
+DEVOPS-CI-002,CI/CD,Functional,System,Critical,High,"Verify the CI pipeline fails and blocks a PR with failing tests","The CI workflow file is configured to run tests.","1. Create a new branch.
+2. Intentionally change a test to make it fail (e.g., `expect(true).toBe(false)`).
+3. Create a pull request to the main branch.
+4. Wait for the CI pipeline to be triggered and complete.","The pipeline fails at the ""Run Tests"" step, and the PR is marked as failed/blocked from merging.",N/A,CI/CD Platform (e.g., GitHub Actions),M,US-017

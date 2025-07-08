@@ -1,0 +1,56 @@
+sequenceDiagram
+    actor Player as playeractor
+    participant "Glyph Weaver Client" as REPOGLYPHCLIENTUNITY
+    actor "Platform Store" as platformstoreactor
+    participant "IAP Service" as REPOGLYPHIAP
+    actor "Platform Validation Server" as platformvalidationserveractor
+    participant "Player Service" as REPOGLYPHPLAYER
+
+    Player-REPOGLYPHCLIENTUNITY: 1. tapsBuyButton(sku: 'hintpacksmall')
+    activate REPOGLYPHCLIENTUNITY
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 2. IAPService.initiatePurchase(sku)
+    note over REPOGLYPHCLIENTUNITY: Client initiates purchase via the platform's native SDK. The platform store UI is displayed, and the app waits for an asynchronous callback.
+    REPOGLYPHCLIENTUNITY-platformstoreactor: 3. initiatePurchase(productId)
+    activate platformstoreactor
+
+    alt Platform handles payment UI and returns result
+        else [Purchase Succeeded]
+            platformstoreactor--REPOGLYPHCLIENTUNITY: 4.1.1. onPurchaseSuccess(receiptData)
+            deactivate platformstoreactor
+            note right of REPOGLYPHIAP: CRITICAL SECURITY STEP: Client sends the signed receipt to the backend. The backend MUST perform a server-to-server call to the platform's validation endpoint to prevent client-side tampering or replay attacks. The client should never be the source of truth for a purchase.
+            REPOGLYPHCLIENTUNITY-REPOGLYPHIAP: 4.1.2. POST /iap/validate { receiptData, userId }
+            activate REPOGLYPHIAP
+            REPOGLYPHIAP-REPOGLYPHIAP: 4.1.2.1. Record transaction as 'pending'
+            REPOGLYPHIAP-platformvalidationserveractor: 4.1.2.2. validateReceipt(receipt)
+            activate platformvalidationserveractor
+            platformvalidationserveractor--REPOGLYPHIAP: validationResponse
+            deactivate platformvalidationserveractor
+
+            alt Check validation response
+                else [Validation Succeeded]
+                    note over REPOGLYPHPLAYER: If this step fails after a successful validation, the purchase is 'stuck'. The transaction should be flagged for manual review or an automated retry job. The player must be given a clear message to contact support with their transaction ID.
+                    REPOGLYPHIAP-REPOGLYPHPLAYER: 4.1.2.3.1.1. updateInventory(userId, itemId, quantity)
+                    activate REPOGLYPHPLAYER
+                    REPOGLYPHPLAYER--REPOGLYPHIAP: inventoryUpdateResponse
+                    deactivate REPOGLYPHPLAYER
+                    REPOGLYPHIAP-REPOGLYPHIAP: 4.1.2.3.1.2. Update transaction to 'validated' & log fulfillment
+                else [Validation Failed]
+                    REPOGLYPHIAP-REPOGLYPHIAP: 4.1.2.3.2.1. Update transaction to 'failed'
+            end
+
+            REPOGLYPHIAP--REPOGLYPHCLIENTUNITY: 4.1.3. HTTP 200 OK { success: true, ... } or HTTP 400/500 { error: ... }
+            deactivate REPOGLYPHIAP
+
+            alt Client handles final outcome
+                else [Purchase Confirmed]
+                    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 4.1.4.1.1. InventoryManager.updateLocalInventory(data)
+                    REPOGLYPHCLIENTUNITY--playeractor: 4.1.4.1.2. showPurchaseSuccessUI()
+                else [Purchase Failed Server-Side]
+                    REPOGLYPHCLIENTUNITY--playeractor: 4.1.4.2.1. showErrorUI('Purchase could not be verified. Please contact support.')
+            end
+        else [Purchase Failed or Cancelled by User]
+            platformstoreactor--REPOGLYPHCLIENTUNITY: 4.2.1. onPurchaseFailed(reason)
+            deactivate platformstoreactor
+            REPOGLYPHCLIENTUNITY--playeractor: 4.2.2. showPurchaseFailedUI(reason)
+    end
+    deactivate REPOGLYPHCLIENTUNITY

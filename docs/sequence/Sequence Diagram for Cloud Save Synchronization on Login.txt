@@ -1,0 +1,45 @@
+sequenceDiagram
+    actor "Glyph Weaver Client" as REPOGLYPHCLIENTUNITY
+    participant "External Platform Service" as EXTPLATFORMSERVICE
+    participant "Player Data Service" as REPOGLYPHPLAYER
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 1. User initiates login
+    activate REPOGLYPHCLIENTUNITY
+
+    REPOGLYPHCLIENTUNITY-EXTPLATFORMSERVICE: 2. Authenticate with platform
+    activate EXTPLATFORMSERVICE
+    EXTPLATFORMSERVICE--REPOGLYPHCLIENTUNITY: Authentication Success (PlayerID)
+    deactivate EXTPLATFORMSERVICE
+
+    REPOGLYPHCLIENTUNITY-EXTPLATFORMSERVICE: 3. Request latest cloud save data
+    activate EXTPLATFORMSERVICE
+    EXTPLATFORMSERVICE--REPOGLYPHCLIENTUNITY: CloudSaveData(data, timestamp, version)
+    deactivate EXTPLATFORMSERVICE
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 4. Load local save data from device storage
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 5. Compare local and cloud save timestamps
+    note over REPOGLYPHCLIENTUNITY: The client resolves save conflicts based on timestamps, but prompts the user if timestamps are ambiguous or too close, as per REQ-11.
+    alt Cloud save is newer OR no local save exists
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 5.1.1. Apply cloud save to game state
+    else Local save is newer
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 5.2.1. Apply local save to game state
+        REPOGLYPHCLIENTUNITY-EXTPLATFORMSERVICE: 5.2.2. Upload newer local save to cloud
+        activate EXTPLATFORMSERVICE
+        EXTPLATFORMSERVICE--REPOGLYPHCLIENTUNITY: Upload Acknowledged
+        deactivate EXTPLATFORMSERVICE
+    else Conflict detected (e.g., timestamps too close)
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 5.3.1. Prompt user to choose between local and cloud save
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 5.3.2. Apply chosen save to game state
+    end
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHPLAYER: 6. GET /player/sync (Sync server-authoritative data)
+    activate REPOGLYPHPLAYER
+    note right of REPOGLYPHPLAYER: Server-authoritative data like virtual currency is synced separately with the game's backend to prevent client-side manipulation, as specified in the Key Interactions.
+    REPOGLYPHPLAYER--REPOGLYPHCLIENTUNITY: AuthoritativeDataResponse (e.g., virtual currency balance)
+    deactivate REPOGLYPHPLAYER
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 7. Apply authoritative data to local inventory
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 8. Finalize login process and load main menu
+    deactivate REPOGLYPHCLIENTUNITY

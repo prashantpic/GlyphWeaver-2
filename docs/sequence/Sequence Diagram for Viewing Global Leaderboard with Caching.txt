@@ -1,0 +1,50 @@
+sequenceDiagram
+    actor "Player" as Player
+    participant "Unity Client" as REPO-GLYPH-CLIENT-UNITY
+    participant "Leaderboard Service" as REPO-GLYPH-LEADERBOARD
+    participant "Cache (Redis)" as Cache-Redis
+    participant "Database (MongoDB)" as Database-MongoDB
+
+    Player-REPO-GLYPH-CLIENT-UNITY: 1. Selects to view global leaderboard
+    activate REPO-GLYPH-CLIENT-UNITY
+
+    REPO-GLYPH-CLIENT-UNITY-REPO-GLYPH-LEADERBOARD: 2. GET /leaderboards/{id}?top=N Authorization: Bearer 
+    activate REPO-GLYPH-LEADERBOARD
+    
+    REPO-GLYPH-LEADERBOARD-REPO-GLYPH-LEADERBOARD: 2.1. Generates cache key (e.g., 'leaderboard:globaltotalscore:top50')
+    activate REPO-GLYPH-LEADERBOARD
+    deactivate REPO-GLYPH-LEADERBOARD
+
+    note over REPO-GLYPH-LEADERBOARD: A cache-aside pattern is used. The service checks the cache first. If data is missing (a miss), it queries the database, then populates the cache before returning the response.
+    
+    REPO-GLYPH-LEADERBOARD-Cache-Redis: 2.2. GET(leaderboardCacheKey)
+    activate Cache-Redis
+    Cache-Redis--REPO-GLYPH-LEADERBOARD: [Cached Data] or [nil]
+    deactivate Cache-Redis
+
+    alt [Cache Hit]
+        REPO-GLYPH-LEADERBOARD-REPO-GLYPH-LEADERBOARD: 2.3.1.1. Deserializes cached data and prepares response
+        activate REPO-GLYPH-LEADERBOARD
+        deactivate REPO-GLYPH-LEADERBOARD
+    else [Cache Miss]
+        REPO-GLYPH-LEADERBOARD-Database-MongoDB: 2.3.2.1. QueryTopScores(leaderboardId, N)
+        activate Database-MongoDB
+        Database-MongoDB--REPO-GLYPH-LEADERBOARD: [Score Documents]
+        deactivate Database-MongoDB
+
+        REPO-GLYPH-LEADERBOARD-REPO-GLYPH-LEADERBOARD: 2.3.2.2. Processes DB documents and formats response
+        activate REPO-GLYPH-LEADERBOARD
+        deactivate REPO-GLYPH-LEADERBOARD
+
+        REPO-GLYPH-LEADERBOARD-Cache-Redis: 2.3.2.3. SET(leaderboardCacheKey, data, TTL)
+        activate Cache-Redis
+        note right of Cache-Redis: Data is stored in the cache with a Time-To-Live (TTL) (e.g., 60 seconds) to ensure the leaderboard remains reasonably fresh without constant database queries.
+        Cache-Redis--REPO-GLYPH-LEADERBOARD: OK
+        deactivate Cache-Redis
+    end
+
+    REPO-GLYPH-LEADERBOARD--REPO-GLYPH-CLIENT-UNITY: 200 OK [Leaderboard Data]
+    deactivate REPO-GLYPH-LEADERBOARD
+
+    REPO-GLYPH-CLIENT-UNITY--Player: 3. Displays leaderboard UI
+    deactivate REPO-GLYPH-CLIENT-UNITY

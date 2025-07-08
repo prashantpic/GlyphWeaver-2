@@ -1,0 +1,40 @@
+sequenceDiagram
+    actor "Glyph Weaver Client" as REPOGLYPHCLIENTUNITY
+    participant "Analytics Service" as REPOGLYPHANALYTICS
+
+    note over REPOGLYPHCLIENTUNITY: A user action in the game (e.g., starting a level, using a hint) triggers the event tracking process.
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 1. clientAnalyticsService.trackEvent('levelstart', {levelId: '1-1', ...})
+    activate REPOGLYPHCLIENTUNITY
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 1.1 Add event object to local batch queue
+
+    loop 2. Multiple other events are tracked and added to the queue...
+    end
+
+    note right of REPOGLYPHCLIENTUNITY: Trigger condition for sending the batch is based on a timer (e.g., every 30 seconds) or the batch reaching a certain size (e.g., 20 events). This is defined in REQ-13.
+    
+    alt 3. [Transmission succeeds]
+        REPOGLYPHCLIENTUNITY-REPOGLYPHANALYTICS: 3.1 POST /analytics/ingest (eventBatch)
+        activate REPOGLYPHANALYTICS
+
+        REPOGLYPHANALYTICS-REPOGLYPHANALYTICS: 3.1.1 [controller] Receives request, passes to service
+        activate REPOGLYPHANALYTICS
+        
+        note left of REPOGLYPHANALYTICS: Invalid events within a batch may be dropped and logged by the service, but the batch itself is still considered successfully processed to avoid re-sending valid data.
+        REPOGLYPHANALYTICS-REPOGLYPHANALYTICS: 3.1.2 [service] Validates batch schema and format
+        
+        loop 3.1.3 [for each valid event in batch]
+            REPOGLYPHANALYTICS-REPOGLYPHANALYTICS: 3.1.3.1 [repository] Store event in Analytics DB
+        end
+        deactivate REPOGLYPHANALYTICS
+
+        REPOGLYPHANALYTICS--REPOGLYPHCLIENTUNITY: HTTP 200 OK
+        deactivate REPOGLYPHANALYTICS
+
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 3.2 Clear local event batch queue
+
+    else 4. [Transmission fails or API returns error]
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 4.1 Keep events in queue for later retry attempt
+    end
+
+    deactivate REPOGLYPHCLIENTUNITY

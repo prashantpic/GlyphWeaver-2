@@ -1,0 +1,65 @@
+sequenceDiagram
+    actor "Player" as playeractor
+    participant "Glyph Weaver Client" as REPOGLYPHCLIENTUNITY
+    participant "Backend Service (Game Content)" as REPOGLYPHGAMECONTENT
+
+    playeractor-REPOGLYPHCLIENTUNITY: 1. Completes final hand-crafted level
+    activate REPOGLYPHCLIENTUNITY
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 2. gameSessionManager: Detects progression to procedural content
+    activate REPOGLYPHCLIENTUNITY
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 3. levelLoadService.RequestNewProceduralLevel(zoneParams)
+    activate REPOGLYPHCLIENTUNITY
+
+    loop while generated level is not valid
+        note over REPOGLYPHCLIENTUNITY: Client-side generation loop ensures the created level is solvable and meets difficulty criteria before being presented to the player (REQ-CGLE-010).
+        
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 3.1.1. proceduralGenerator.Generate(params)
+        activate REPOGLYPHCLIENTUNITY
+        REPOGLYPHCLIENTUNITY--REPOGLYPHCLIENTUNITY: levelData (layout, solution, seed)
+        deactivate REPOGLYPHCLIENTUNITY
+
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 3.1.2. pathValidator.VerifySolvability(levelData)
+        activate REPOGLYPHCLIENTUNITY
+        REPOGLYPHCLIENTUNITY--REPOGLYPHCLIENTUNITY: isSolvable
+        deactivate REPOGLYPHCLIENTUNITY
+
+        REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 3.1.3. difficultyValidator.VerifyDifficulty(levelData)
+        activate REPOGLYPHCLIENTUNITY
+        REPOGLYPHCLIENTUNITY--REPOGLYPHCLIENTUNITY: meetsCriteria
+        deactivate REPOGLYPHCLIENTUNITY
+
+        alt isSolvable && meetsCriteria
+            REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 3.1.4.1.1. Break loop
+        else else
+            REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 3.1.4.2.1. Continue loop (generate with new seed)
+        end
+    end
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHGAMECONTENT: 3.2. POST /procedural-levels/log (seed, params)
+    activate REPOGLYPHGAMECONTENT
+    note right of REPOGLYPHGAMECONTENT: Logging the seed and generation parameters to the backend is critical for reproducing specific levels for support, testing, and cheat detection analysis (REQ-CGLE-011).
+
+    REPOGLYPHGAMECONTENT-REPOGLYPHGAMECONTENT: 3.2.1. proceduralLevelDataService.StoreGeneratedLevel(details)
+    activate REPOGLYPHGAMECONTENT
+    
+    REPOGLYPHGAMECONTENT-REPOGLYPHGAMECONTENT: 3.2.1.1. proceduralLevelDataRepository.save(document)
+    activate REPOGLYPHGAMECONTENT
+    REPOGLYPHGAMECONTENT--REPOGLYPHGAMECONTENT: ack
+    deactivate REPOGLYPHGAMECONTENT
+
+    REPOGLYPHGAMECONTENT--REPOGLYPHGAMECONTENT: ack
+    deactivate REPOGLYPHGAMECONTENT
+
+    REPOGLYPHGAMECONTENT--REPOGLYPHCLIENTUNITY: 201 Created
+    deactivate REPOGLYPHGAMECONTENT
+
+    REPOGLYPHCLIENTUNITY--REPOGLYPHCLIENTUNITY: generatedLevelData
+    deactivate REPOGLYPHCLIENTUNITY
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHCLIENTUNITY: 4. gameSessionManager.InitializeGameplay(generatedLevelData)
+    deactivate REPOGLYPHCLIENTUNITY
+
+    REPOGLYPHCLIENTUNITY--playeractor: 5. Display new procedural level
+    deactivate REPOGLYPHCLIENTUNITY

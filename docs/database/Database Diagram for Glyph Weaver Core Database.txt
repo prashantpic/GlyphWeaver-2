@@ -1,0 +1,130 @@
+erDiagram
+    Zone {
+        UUID _id PK
+        VARCHAR name
+    }
+    Level {
+        UUID _id PK
+        UUID zoneId FK
+        INT levelNumber
+        VARCHAR type
+    }
+    ProceduralLevel {
+        UUID _id PK
+        UUID baseLevelId FK
+        UUID zoneId FK
+        INT levelNumber
+    }
+    PuzzleType {
+        UUID _id PK
+        VARCHAR name
+    }
+    Obstacle {
+        UUID _id PK
+        VARCHAR name
+    }
+    Glyph {
+        UUID _id PK
+        VARCHAR type
+    }
+    Tutorial {
+        UUID _id PK
+        VARCHAR keyName
+    }
+    PlayerProfile {
+        UUID _id PK
+        VARCHAR username
+        UUID currentZone FK
+    }
+    UserTutorialStatus {
+        UUID _id PK
+        UUID userId FK
+        UUID tutorialId FK
+    }
+    LevelProgress {
+        UUID _id PK
+        UUID userId FK
+        UUID levelId FK
+        BOOLEAN isProcedural
+    }
+    InAppPurchase {
+        UUID _id PK
+        VARCHAR sku
+    }
+    IAPTransaction {
+        UUID _id PK
+        UUID userId FK
+        UUID itemId FK
+    }
+    PlayerInventory {
+        UUID _id PK
+        UUID userId FK
+        VARCHAR type
+        VARCHAR keyName
+    }
+    Leaderboard {
+        UUID _id PK
+        VARCHAR keyName
+        UUID associatedLevelId FK
+        UUID associatedZoneId FK
+    }
+    PlayerScore {
+        UUID _id PK
+        UUID userId FK
+        UUID leaderboardId FK
+    }
+    Achievement {
+        UUID _id PK
+        VARCHAR keyName
+    }
+    PlayerAchievement {
+        UUID _id PK
+        UUID userId FK
+        UUID achievementId FK
+    }
+    CloudSave {
+        UUID _id PK
+        UUID userId FK
+        VARCHAR platform
+    }
+    GameConfiguration {
+        UUID _id PK
+        VARCHAR key
+    }
+    AuditLog {
+        UUID _id PK
+        VARCHAR eventType
+        UUID userId FK
+        DateTime timestamp
+    }
+
+    Zone }|--|| Level : contains
+    Zone }|--|| ProceduralLevel : contains
+    Zone }|--o{ PlayerProfile : currently_in
+    Zone }|--o{ Leaderboard : associated_with
+    Level }|--|| ProceduralLevel : template_for
+    Level }|--o{ LevelProgress : tracks_progress
+    Level }|--o| Leaderboard : associated_with
+    ProceduralLevel }|--o{ LevelProgress : tracks_progress
+    ProceduralLevel }|--o| Leaderboard : associated_with
+
+    PuzzleType }|--o{ Level : used_in
+    Obstacle }|--o{ Level : used_in
+    Glyph }|--o{ Level : used_in
+
+    PlayerProfile ||--|{ UserTutorialStatus : tracks_status_for
+    PlayerProfile ||--|{ LevelProgress : has_progress_on
+    PlayerProfile ||--|{ IAPTransaction : made
+    PlayerProfile ||--|{ PlayerInventory : owns
+    PlayerProfile ||--|{ PlayerScore : submitted
+    PlayerProfile ||--|{ PlayerAchievement : tracks_status_for
+    PlayerProfile ||--|{ CloudSave : has_save_on
+    PlayerProfile ||--o{ AuditLog : generated_log
+
+    Tutorial }|--|{ UserTutorialStatus : has_status_for
+
+    InAppPurchase }|--|{ IAPTransaction : purchased_item
+
+    Leaderboard }|--|{ PlayerScore : has_score_on
+
+    Achievement }|--|{ PlayerAchievement : has_status_for

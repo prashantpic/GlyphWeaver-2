@@ -1,0 +1,32 @@
+sequenceDiagram
+    actor "Glyph Weaver Client" as REPOGLYPHCLIENTUNITY
+    participant "Leaderboard Service" as REPOGLYPHLEADERBOARD
+    participant "Player Service" as REPOGLYPHPLAYER
+
+    REPOGLYPHCLIENTUNITY-REPOGLYPHLEADERBOARD: 1. POST /v1/leaderboards/{id}/scores (score, levelId, checksum)
+    activate REPOGLYPHLEADERBOARD
+    note over REPOGLYPHCLIENTUNITY: Client generates a checksum of game state and score data before sending.
+
+    REPOGLYPHLEADERBOARD-REPOGLYPHLEADERBOARD: 1.1.1. validateChecksumAndParameters(scoreData)
+    note right of REPOGLYPHLEADERBOARD: Basic validation checks if score exceeds the level's maximum possible score.
+
+    REPOGLYPHLEADERBOARD-REPOGLYPHPLAYER: 1.1.2. GET /v1/players/{userId}/history
+    activate REPOGLYPHPLAYER
+    REPOGLYPHPLAYER--REPOGLYPHLEADERBOARD: playerHistoryData
+    deactivate REPOGLYPHPLAYER
+
+    REPOGLYPHLEADERBOARD-REPOGLYPHLEADERBOARD: 1.1.3. analyzeForAnomalies(scoreData, history)
+    note right of REPOGLYPHLEADERBOARD: Anomaly detection checks for unusual progression speed or score patterns based on player's history.
+
+    alt 1.2 [if validationResult is 'Valid']
+        REPOGLYPHLEADERBOARD-REPOGLYPHLEADERBOARD: 1.2.1. persistScore(validatedScore)
+        note right of REPOGLYPHLEADERBOARD: Persists score to MongoDB via ScoreRepository.
+        REPOGLYPHLEADERBOARD-REPOGLYPHLEADERBOARD: 1.2.2. updateCache(leaderboardId)
+        note right of REPOGLYPHLEADERBOARD: Invalidates/updates leaderboard cache in Redis.
+    else 1.3 [else validationResult is 'Invalid']
+        REPOGLYPHLEADERBOARD-REPOGLYPHLEADERBOARD: 1.3.1. logInvalidAttempt(scoreData, reason)
+        note right of REPOGLYPHLEADERBOARD: Logs invalid attempt to an audit trail for later review.
+    end
+
+    REPOGLYPHLEADERBOARD--REPOGLYPHCLIENTUNITY: Conditional: Returns 200 OK with rank if valid, or 400 Bad Request if invalid.
+    deactivate REPOGLYPHLEADERBOARD
